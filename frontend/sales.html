@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales - Inventory</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f8faff;
+            color: #1e293b;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: white;
+            height: 100vh;
+            position: fixed;
+            padding: 1.5rem 1rem;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #6366f1;
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.75rem 1rem;
+            color: #64748b;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover { background: #f0f4ff; color: #6366f1; }
+        .nav-item.active { background: #6366f1; color: white; }
+
+        .logout-btn {
+            margin-top: auto;
+            padding: 0.75rem;
+            background: #fef2f2;
+            color: #dc2626;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            width: 100%;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 220px;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .top-bar h1 { font-size: 1.5rem; }
+        .top-bar p { color: #94a3b8; font-size: 0.9rem; margin-top: 0.2rem; }
+
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover { background: #4f46e5; }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .summary-card .s-label {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-bottom: 0.3rem;
+        }
+
+        .summary-card .s-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #16a34a;
+        }
+
+        /* Table */
+        .section {
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .section-header {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        th {
+            text-align: left;
+            padding: 0.7rem 0.8rem;
+            color: #94a3b8;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 0.9rem 0.8rem;
+            font-size: 0.92rem;
+            color: #334155;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .badge {
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-green { background: #f0fdf4; color: #16a34a; }
+        .badge-blue { background: #eff6ff; color: #2563eb; }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 440px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 { font-size: 1.15rem; color: #1e293b; }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: none;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .form-group { margin-bottom: 1.1rem; }
+
+        .form-label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: #1e293b;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .form-control:focus { border-color: #6366f1; }
+
+        /* Product select गर्दा info देखाउने */
+        .product-info {
+            background: #f8faff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-top: 0.5rem;
+            display: none;
+            font-size: 0.88rem;
+        }
+
+        .product-info.active { display: block; }
+        .product-info span { color: #6366f1; font-weight: 600; }
+
+        /* Total preview */
+        .total-preview {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .total-preview.active { display: block; }
+        .total-preview .t-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #475569;
+            margin-bottom: 0.3rem;
+        }
+
+        .total-preview .t-row.total {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #16a34a;
+            border-top: 1px solid #bbf7d0;
+            padding-top: 0.5rem;
+            margin-top: 0.3rem;
+        }
+
+        .error-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 0.8rem;
+            background: #f1f5f9;
+            color: #64748b;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-save {
+            flex: 2;
+            padding: 0.8rem;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .btn-save:hover { background: #15803d; }
+        .btn-save:disabled { background: #86efac; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">📦 Inventory</div>
+        <nav>
+            <a href="index.html" class="nav-item">📊 Dashboard</a>
+            <a href="products.html" class="nav-item">🏷️ Products</a>
+            <a href="purchases.html" class="nav-item">🛒 Purchases</a>
+            <a href="sales.html" class="nav-item active">💰 Sales</a>
+        </nav>
+        <button class="logout-btn" id="logout-btn">🚪 Logout</button>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+        <div class="top-bar">
+            <div>
+                <h1>💰 बिक्री (Sales)</h1>
+                <p>आजको मिति: <span id="today-date"></span></p>
+            </div>
+            <button class="btn-primary" id="add-sale-btn">+ नयाँ बिक्री थप्नुस्</button>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="s-label">💰 आजको कुल बिक्री</div>
+                <div class="s-value" id="today-revenue">-</div>
+            </div>
+            <div class="summary-card">
+                <div class="s-label">📈 आजको नाफा</div>
+                <div class="s-value" id="today-profit">-</div>
+            </div>
+            <div class="summary-card">
+                <div class="s-label">🧾 आजको बिक्री संख्या</div>
+                <div class="s-value" style="color:#6366f1" id="today-count">-</div>
+            </div>
+        </div>
+
+        <!-- Sales Table -->
+        <div class="section">
+            <div class="section-header">
+                <span>📋 बिक्री Records</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Customer</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>कुल रकम</th>
+                        <th>नाफा</th>
+                        <th>मिति</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-table">
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <div class="empty-icon">💰</div>
+                            Loading...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Sale Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>💰 नयाँ बिक्री थप्नुस्</h3>
+                <button class="close-btn" id="close-modal">✕</button>
+            </div>
+
+            <div class="error-box" id="modal-error"></div>
+
+            <div class="form-group">
+                <label class="form-label">Product छान्नुस् *</label>
+                <select class="form-control" id="product">
+                    <option value="">-- Product छान्नुस् --</option>
+                </select>
+                <!-- Product info - select गरेपछि देखिन्छ -->
+                <div class="product-info" id="product-info">
+                    Stock: <span id="info-stock">-</span> |
+                    Price: Rs. <span id="info-price">-</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Customer नाम (optional)</label>
+                <input type="text" class="form-control" id="customer_name"
+                    placeholder="Customer को नाम (छोड्न पनि हुन्छ)">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Quantity *</label>
+                <input type="number" class="form-control" id="quantity"
+                    placeholder="कति थान?" min="1">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">बिक्री मूल्य (Rs.) *</label>
+                <input type="number" class="form-control" id="unit_price"
+                    placeholder="0.00" step="0.01">
+            </div>
+
+            <!-- Total Preview -->
+            <div class="total-preview" id="total-preview">
+                <div class="t-row">
+                    <span>Quantity:</span>
+                    <span id="prev-qty">-</span>
+                </div>
+                <div class="t-row">
+                    <span>Price:</span>
+                    <span id="prev-price">-</span>
+                </div>
+                <div class="t-row total">
+                    <span>💰 कुल रकम:</span>
+                    <span id="prev-total">-</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" id="cancel-btn">रद्द गर्नुस्</button>
+                <button class="btn-save" id="save-btn">💰 बिक्री Record गर्नुस्</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Date
+        document.getElementById('today-date').textContent =
+            new Date().toLocaleDateString('ne-NP', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+        let products = []; // products cache
+
+        // Products load
+        async function loadProducts() {
+            const res = await apiFetch('/api/products/');
+            const data = await res.json();
+            products = data.results || data;
+
+            const select = document.getElementById('product');
+            products.forEach(p => {
+                select.innerHTML += `<option value="${p.id}"
+                    data-stock="${p.current_stock}"
+                    data-price="${p.selling_price}"
+                    data-cost="${p.cost_price}">
+                    ${p.name} (Stock: ${p.current_stock})
+                </option>`;
+            });
+        }
+
+        // Product select गर्दा info देखाउने
+        document.getElementById('product').addEventListener('change', function () {
+            const selected = this.options[this.selectedIndex];
+            const stock = selected.dataset.stock;
+            const price = selected.dataset.price;
+
+            if (this.value) {
+                document.getElementById('info-stock').textContent = stock;
+                document.getElementById('info-price').textContent = price;
+                document.getElementById('product-info').classList.add('active');
+                document.getElementById('unit_price').value = price; // auto fill
+            } else {
+                document.getElementById('product-info').classList.remove('active');
+            }
+            updatePreview();
+        });
+
+        // Total preview update
+        function updatePreview() {
+            const qty = parseFloat(document.getElementById('quantity').value) || 0;
+            const price = parseFloat(document.getElementById('unit_price').value) || 0;
+
+            if (qty > 0 && price > 0) {
+                const total = qty * price;
+                document.getElementById('prev-qty').textContent = qty;
+                document.getElementById('prev-price').textContent = `Rs. ${price}`;
+                document.getElementById('prev-total').textContent = `Rs. ${total.toLocaleString()}`;
+                document.getElementById('total-preview').classList.add('active');
+            } else {
+                document.getElementById('total-preview').classList.remove('active');
+            }
+        }
+
+        document.getElementById('quantity').addEventListener('input', updatePreview);
+        document.getElementById('unit_price').addEventListener('input', updatePreview);
+
+        // Dashboard summary load
+        async function loadSummary() {
+            const res = await apiFetch('/api/dashboard/');
+            const data = await res.json();
+            document.getElementById('today-revenue').textContent =
+                `Rs. ${parseFloat(data.today.revenue).toLocaleString()}`;
+            document.getElementById('today-profit').textContent =
+                `Rs. ${parseFloat(data.today.profit).toLocaleString()}`;
+            document.getElementById('today-count').textContent =
+                data.today.sales_count;
+        }
+
+        // Sales list load
+        async function loadSales() {
+            const res = await apiFetch('/api/sales/');
+            const data = await res.json();
+            const sales = data.results || data;
+            const tbody = document.getElementById('sales-table');
+
+            if (sales.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <div class="empty-icon">💰</div>
+                            अझै कुनै बिक्री छैन - थप्नुस्!
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sales.map(s => `
+                <tr>
+                    <td><strong>${s.product_name}</strong></td>
+                    <td>${s.customer_name || '<span style="color:#94a3b8">—</span>'}</td>
+                    <td><span class="badge badge-blue">${s.quantity} थान</span></td>
+                    <td>Rs. ${s.unit_price}</td>
+                    <td><strong>Rs. ${parseFloat(s.total_revenue).toLocaleString()}</strong></td>
+                    <td><span class="badge badge-green">Rs. ${parseFloat(s.total_profit).toLocaleString()}</span></td>
+                    <td style="color:#94a3b8">${new Date(s.created_at).toLocaleDateString('ne-NP')}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Sale save
+        async function saveSale() {
+            const errorEl = document.getElementById('modal-error');
+            errorEl.style.display = 'none';
+
+            const productId = document.getElementById('product').value;
+            const quantity = document.getElementById('quantity').value;
+            const unit_price = document.getElementById('unit_price').value;
+            const customer_name = document.getElementById('customer_name').value.trim();
+
+            if (!productId || !quantity || !unit_price) {
+                errorEl.textContent = 'Product, Quantity र Price भर्नुस्!';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            // Stock check - frontend level
+            const selected = document.getElementById('product').options[
+                document.getElementById('product').selectedIndex
+            ];
+            if (parseInt(quantity) > parseInt(selected.dataset.stock)) {
+                errorEl.textContent = `Stock पुगेन! Available: ${selected.dataset.stock} थान`;
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            const res = await apiFetch('/api/sales/', {
+                method: 'POST',
+                body: JSON.stringify({
+                    product: productId,
+                    quantity: parseInt(quantity),
+                    unit_price: unit_price,
+                    customer_name: customer_name
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                closeModal();
+                loadSales();
+                loadSummary();
+            } else {
+                const errors = Object.values(data).flat().join(' ');
+                errorEl.textContent = errors;
+                errorEl.style.display = 'block';
+            }
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = '💰 बिक्री Record गर्नुस्';
+        }
+
+        // Modal
+        function openModal() {
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.getElementById('product').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('unit_price').value = '';
+            document.getElementById('customer_name').value = '';
+            document.getElementById('product-info').classList.remove('active');
+            document.getElementById('total-preview').classList.remove('active');
+            document.getElementById('modal-error').style.display = 'none';
+        }
+
+        // Events
+        document.getElementById('add-sale-btn').addEventListener('click', openModal);
+        document.getElementById('cancel-btn').addEventListener('click', closeModal);
+        document.getElementById('close-modal').addEventListener('click', closeModal);
+        document.getElementById('save-btn').addEventListener('click', saveSale);
+        document.getElementById('logout-btn').addEventListener('click', logout);
+
+        // Init
+        loadProducts();
+        loadSales();
+        loadSummary();
+    </script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory System - Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            width: 380px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+        }
+
+        .logo h1 {
+            font-size: 1.4rem;
+            color: #1e293b;
+            margin-top: 0.5rem;
+        }
+
+        .logo p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            color: #475569;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #1e293b;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus { border-color: #6366f1; }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .login-btn:hover { background: #4f46e5; }
+        .login-btn:disabled { background: #a5b4fc; cursor: not-allowed; }
+
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 0.8rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="logo">
+            <div class="logo-icon">📦</div>
+            <h1>Inventory System</h1>
+            <p>आफ्नो account मा login गर्नुस्</p>
+        </div>
+
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Username हाल्नुस्">
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Password हाल्नुस्">
+        </div>
+
+        <button class="login-btn" id="login-btn">🔐 Login गर्नुस्</button>
+        <div class="error" id="error-msg">Username वा Password मिलेन!</div>
+    </div>
+
+    <script>
+        const API = 'http://127.0.0.1:8000';
+        const loginBtn = document.getElementById('login-btn');
+
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorEl = document.getElementById('error-msg');
+
+            if (!username || !password) {
+                errorEl.textContent = 'Username र Password भर्नुस्!';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+            errorEl.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API}/api/token/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('access', data.access);
+                    localStorage.setItem('refresh', data.refresh);
+                    window.location.href = 'index.html';
+                } else {
+                    errorEl.textContent = 'Username वा Password मिलेन!';
+                    errorEl.style.display = 'block';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '🔐 Login गर्नुस्';
+                }
+            } catch {
+                errorEl.textContent = 'Server सँग connect हुन सकेन!';
+                errorEl.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = '🔐 Login गर्नुस्';
+            }
+        }
+
+        loginBtn.addEventListener('click', login);
+        document.addEventListener('keypress', e => {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>

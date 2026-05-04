@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory - Products</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #1e293b;
+            height: 100vh;
+            position: fixed;
+            padding: 1.5rem;
+            border-right: 1px solid #334155;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 2rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.7rem 1rem;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #6366f1;
+            color: white;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            padding: 0.7rem;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 240px;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .btn-primary {
+            padding: 0.7rem 1.2rem;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary:hover { background: #4f46e5; }
+
+        /* Table */
+        .section {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            padding: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.7rem;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        td {
+            padding: 0.7rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .badge-danger {
+            background: #dc262620;
+            color: #f87171;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .badge-success {
+            background: #16a34a20;
+            color: #4ade80;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #00000080;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 420px;
+            border: 1px solid #334155;
+        }
+
+        .modal h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input:focus, select:focus { border-color: #6366f1; }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 0.7rem;
+            background: #334155;
+            color: #f1f5f9;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            flex: 1;
+            padding: 0.7rem;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .error-msg {
+            color: #f87171;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">📦 Inventory</div>
+        <a href="index.html" class="nav-item">📊 Dashboard</a>
+        <a href="products.html" class="nav-item active">🏷️ Products</a>
+        <a href="purchases.html" class="nav-item">🛒 Purchases</a>
+        <a href="sales.html" class="nav-item">💰 Sales</a>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+        <div class="top-bar">
+            <div class="page-title">🏷️ Products</div>
+            <button class="btn-primary" id="add-product-btn">+ Add Product</button>
+        </div>
+
+        <div class="section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>SKU</th>
+                        <th>Category</th>
+                        <th>Cost Price</th>
+                        <th>Selling Price</th>
+                        <th>Profit</th>
+                        <th>Stock</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="products-table">
+                    <tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:2rem">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h3>➕ Add Product</h3>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select id="category">
+                    <option value="">Select category...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" id="name" placeholder="e.g. Rice 5kg">
+            </div>
+
+            <div class="form-group">
+                <label>SKU</label>
+                <input type="text" id="sku" placeholder="e.g. RICE-5KG-001">
+            </div>
+
+            <div class="form-group">
+                <label>Cost Price (Rs.)</label>
+                <input type="number" id="cost_price" placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+                <label>Selling Price (Rs.)</label>
+                <input type="number" id="selling_price" placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+                <label>Low Stock Threshold</label>
+                <input type="number" id="low_stock_threshold" placeholder="10" value="10">
+            </div>
+
+            <p class="error-msg" id="modal-error"></p>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" id="cancel-btn">Cancel</button>
+                <button class="btn-save" id="save-btn">Save Product</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://127.0.0.1:8000';
+        const token = localStorage.getItem('access');
+        if (!token) window.location.href = 'login.html';
+
+        // Auth header
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+
+        // Products load गर्ने
+        async function loadProducts() {
+            const res = await fetch(`${API}/api/products/`, { headers });
+            if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
+            const data = await res.json();
+
+            const tbody = document.getElementById('products-table');
+
+            if (data.results?.length === 0 || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:2rem">कुनै product छैन - थप्नुस्!</td></tr>`;
+                return;
+            }
+
+            // DRF pagination वा direct array handle गर
+            const products = data.results || data;
+
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.name}</td>
+                    <td style="color:#94a3b8">${p.sku}</td>
+                    <td>${p.category_name}</td>
+                    <td>Rs. ${p.cost_price}</td>
+                    <td>Rs. ${p.selling_price}</td>
+                    <td style="color:#4ade80">Rs. ${p.profit_margin}</td>
+                    <td>${p.current_stock}</td>
+                    <td>
+                        ${p.is_low_stock
+                            ? '<span class="badge-danger">⚠️ Low Stock</span>'
+                            : '<span class="badge-success">✅ OK</span>'
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Categories load गर्ने (modal को लागि)
+        async function loadCategories() {
+            const res = await fetch(`${API}/api/categories/`, { headers });
+            const data = await res.json();
+            const categories = data.results || data;
+            const select = document.getElementById('category');
+            categories.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+        }
+
+        // Product save गर्ने
+        async function saveProduct() {
+            const errorEl = document.getElementById('modal-error');
+            errorEl.style.display = 'none';
+
+            const body = {
+                category: document.getElementById('category').value,
+                name: document.getElementById('name').value.trim(),
+                sku: document.getElementById('sku').value.trim(),
+                cost_price: document.getElementById('cost_price').value,
+                selling_price: document.getElementById('selling_price').value,
+                low_stock_threshold: document.getElementById('low_stock_threshold').value,
+            };
+
+            // Basic validation
+            if (!body.category || !body.name || !body.sku || !body.cost_price || !body.selling_price) {
+                errorEl.textContent = 'सबै fields भर्नुस्!';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            const res = await fetch(`${API}/api/products/`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                closeModal();
+                loadProducts(); // Table refresh गर
+            } else {
+                // Django को error message देखाउ
+                const errors = Object.values(data).flat().join(' ');
+                errorEl.textContent = errors;
+                errorEl.style.display = 'block';
+            }
+        }
+
+        // Modal open/close
+        function openModal() {
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            // Form reset गर
+            ['name', 'sku', 'cost_price', 'selling_price'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('low_stock_threshold').value = '10';
+            document.getElementById('category').value = '';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Event listeners
+        document.getElementById('add-product-btn').addEventListener('click', openModal);
+        document.getElementById('cancel-btn').addEventListener('click', closeModal);
+        document.getElementById('save-btn').addEventListener('click', saveProduct);
+
+        // Initialize
+        loadProducts();
+        loadCategories();
+    </script>
+</body>
+</html>

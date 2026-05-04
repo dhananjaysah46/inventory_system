@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Inventory</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f8faff;
+            color: #1e293b;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: white;
+            height: 100vh;
+            position: fixed;
+            padding: 1.5rem 1rem;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #6366f1;
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.75rem 1rem;
+            color: #64748b;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover { background: #f0f4ff; color: #6366f1; }
+        .nav-item.active { background: #6366f1; color: white; }
+
+        .logout-btn {
+            margin-top: auto;
+            padding: 0.75rem;
+            background: #fef2f2;
+            color: #dc2626;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            width: 100%;
+        }
+
+        .logout-btn:hover { background: #fee2e2; }
+
+        /* Main */
+        .main {
+            margin-left: 220px;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem;
+            color: #1e293b;
+        }
+
+        .page-header p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
+
+        /* Stat Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .stat-card .icon {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-card.warning .value { color: #dc2626; }
+        .stat-card.success .value { color: #16a34a; }
+
+        /* Tables */
+        .section {
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .section-header {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        th {
+            text-align: left;
+            padding: 0.7rem 0.8rem;
+            color: #94a3b8;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 0.8rem;
+            font-size: 0.92rem;
+            color: #334155;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .badge {
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-red { background: #fef2f2; color: #dc2626; }
+        .badge-green { background: #f0fdf4; color: #16a34a; }
+        .badge-blue { background: #eff6ff; color: #2563eb; }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">📦 Inventory</div>
+        <nav>
+            <a href="index.html" class="nav-item active">📊 Dashboard</a>
+            <a href="products.html" class="nav-item">🏷️ Products</a>
+            <a href="purchases.html" class="nav-item">🛒 Purchases</a>
+            <a href="sales.html" class="nav-item">💰 Sales</a>
+        </nav>
+        <button class="logout-btn" id="logout-btn">🚪 Logout</button>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+        <div class="page-header">
+            <h1>📊 Dashboard</h1>
+            <p id="today-date"></p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card success">
+                <div class="icon">💰</div>
+                <div class="label">आजको बिक्री</div>
+                <div class="value" id="revenue">-</div>
+            </div>
+            <div class="stat-card success">
+                <div class="icon">📈</div>
+                <div class="label">आजको नाफा</div>
+                <div class="value" id="profit">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🧾</div>
+                <div class="label">आजको बिक्री संख्या</div>
+                <div class="value" id="sales-count">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📦</div>
+                <div class="label">कुल Products</div>
+                <div class="value" id="total-products">-</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="icon">⚠️</div>
+                <div class="label">Low Stock Items</div>
+                <div class="value" id="low-stock-count">-</div>
+            </div>
+        </div>
+
+        <!-- Low Stock -->
+        <div class="section">
+            <div class="section-header">⚠️ Low Stock Alert</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>हालको Stock</th>
+                        <th>Minimum</th>
+                        <th>अवस्था</th>
+                    </tr>
+                </thead>
+                <tbody id="low-stock-table">
+                    <tr><td colspan="4" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top Products -->
+        <div class="section">
+            <div class="section-header">🔥 धेरै बिकेका Products</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>कुल बिक्री</th>
+                    </tr>
+                </thead>
+                <tbody id="top-products-table">
+                    <tr><td colspan="3" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Date देखाउने
+        document.getElementById('today-date').textContent =
+            new Date().toLocaleDateString('ne-NP', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+        async function loadDashboard() {
+            const res = await apiFetch('/api/dashboard/');
+            const data = await res.json();
+
+            document.getElementById('revenue').textContent = `Rs. ${parseFloat(data.today.revenue).toLocaleString()}`;
+            document.getElementById('profit').textContent = `Rs. ${parseFloat(data.today.profit).toLocaleString()}`;
+            document.getElementById('sales-count').textContent = data.today.sales_count;
+            document.getElementById('total-products').textContent = data.inventory.total_products;
+            document.getElementById('low-stock-count').textContent = data.inventory.low_stock_count;
+
+            // Low stock table
+            const lowBody = document.getElementById('low-stock-table');
+            lowBody.innerHTML = data.inventory.low_stock_items.length === 0
+                ? `<tr><td colspan="4" class="empty-state">✅ सबै stock ठीक छ!</td></tr>`
+                : data.inventory.low_stock_items.map(item => `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td><strong>${item.current_stock}</strong></td>
+                        <td>${item.low_stock_threshold}</td>
+                        <td><span class="badge badge-red">⚠️ कम छ</span></td>
+                    </tr>
+                `).join('');
+
+            // Top products
+            const topBody = document.getElementById('top-products-table');
+            topBody.innerHTML = data.top_products.length === 0
+                ? `<tr><td colspan="3" class="empty-state">अझै बिक्री भएको छैन</td></tr>`
+                : data.top_products.map((p, i) => `
+                    <tr>
+                        <td><span class="badge badge-blue">${i + 1}</span></td>
+                        <td>${p.product__name}</td>
+                        <td><span class="badge badge-green">${p.total_sold} units</span></td>
+                    </tr>
+                `).join('');
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', logout);
+
+        loadDashboard();
+    </script>
+</body>
+</html>
