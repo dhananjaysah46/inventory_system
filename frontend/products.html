@@ -2,64 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Inventory - Products</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Inventory</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: #0f172a;
-            color: #f1f5f9;
+            background: #f8faff;
+            color: #1e293b;
             display: flex;
         }
 
         /* Sidebar */
         .sidebar {
-            width: 240px;
-            background: #1e293b;
+            width: 220px;
+            background: white;
             height: 100vh;
             position: fixed;
-            padding: 1.5rem;
-            border-right: 1px solid #334155;
+            padding: 1.5rem 1rem;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
         }
 
-        .logo {
+        .sidebar-logo {
             font-size: 1.2rem;
             font-weight: 700;
             color: #6366f1;
-            margin-bottom: 2rem;
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .nav-item {
-            display: block;
-            padding: 0.7rem 1rem;
-            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.75rem 1rem;
+            color: #64748b;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
         }
 
-        .nav-item:hover, .nav-item.active {
-            background: #6366f1;
-            color: white;
-        }
+        .nav-item:hover { background: #f0f4ff; color: #6366f1; }
+        .nav-item.active { background: #6366f1; color: white; }
 
         .logout-btn {
-            position: absolute;
-            bottom: 1.5rem;
-            left: 1.5rem;
-            right: 1.5rem;
-            padding: 0.7rem;
-            background: #dc2626;
-            color: white;
+            margin-top: auto;
+            padding: 0.75rem;
+            background: #fef2f2;
+            color: #dc2626;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 0.95rem;
+            width: 100%;
         }
+
+        .logout-btn:hover { background: #fee2e2; }
 
         /* Main */
         .main {
-            margin-left: 240px;
+            margin-left: 220px;
             padding: 2rem;
             width: 100%;
         }
@@ -71,72 +78,112 @@
             margin-bottom: 1.5rem;
         }
 
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
+        .top-bar h1 { font-size: 1.5rem; }
+        .top-bar p { color: #94a3b8; font-size: 0.9rem; margin-top: 0.2rem; }
 
         .btn-primary {
-            padding: 0.7rem 1.2rem;
+            padding: 0.75rem 1.5rem;
             background: #6366f1;
             color: white;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 10px;
             font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
         .btn-primary:hover { background: #4f46e5; }
 
-        /* Table */
-        .section {
-            background: #1e293b;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            padding: 1.5rem;
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .summary-card {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
+
+        .s-label {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-bottom: 0.3rem;
+        }
+
+        .s-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        /* Table */
+        .section {
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .section-header {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
 
         th {
             text-align: left;
-            padding: 0.7rem;
+            padding: 0.7rem 0.8rem;
             color: #94a3b8;
-            font-size: 0.85rem;
-            border-bottom: 1px solid #334155;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
         td {
-            padding: 0.7rem;
-            font-size: 0.9rem;
-            border-bottom: 1px solid #334155;
+            padding: 0.9rem 0.8rem;
+            font-size: 0.92rem;
+            color: #334155;
+            border-top: 1px solid #f1f5f9;
         }
 
-        .badge-danger {
-            background: #dc262620;
-            color: #f87171;
-            padding: 0.2rem 0.6rem;
+        .badge {
+            padding: 0.25rem 0.7rem;
             border-radius: 20px;
             font-size: 0.8rem;
+            font-weight: 500;
         }
 
-        .badge-success {
-            background: #16a34a20;
-            color: #4ade80;
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .badge-red { background: #fef2f2; color: #dc2626; }
+        .badge-green { background: #f0fdf4; color: #16a34a; }
+        .badge-blue { background: #eff6ff; color: #2563eb; }
+        .badge-purple { background: #f5f3ff; color: #7c3aed; }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
         }
+
+        .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
 
         /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: #00000080;
+            background: rgba(0,0,0,0.4);
             justify-content: center;
             align-items: center;
             z-index: 100;
@@ -145,111 +192,176 @@
         .modal-overlay.active { display: flex; }
 
         .modal {
-            background: #1e293b;
-            border-radius: 12px;
+            background: white;
+            border-radius: 16px;
             padding: 2rem;
-            width: 420px;
-            border: 1px solid #334155;
+            width: 440px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        .modal h3 {
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 1.5rem;
-            font-size: 1.1rem;
         }
 
-        .form-group {
-            margin-bottom: 1rem;
+        .modal-header h3 { font-size: 1.15rem; color: #1e293b; }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: none;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 1rem;
         }
 
-        label {
-            color: #94a3b8;
-            font-size: 0.85rem;
+        .form-group { margin-bottom: 1.1rem; }
+
+        .form-label {
             display: block;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: #475569;
             margin-bottom: 0.4rem;
         }
 
-        input, select {
+        .form-control {
             width: 100%;
-            padding: 0.7rem 1rem;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: #f1f5f9;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
             font-size: 0.95rem;
+            color: #1e293b;
             outline: none;
+            transition: border 0.2s;
+            background: white;
         }
 
-        input:focus, select:focus { border-color: #6366f1; }
+        .form-control:focus { border-color: #6366f1; }
+
+        .error-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
 
         .modal-actions {
             display: flex;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
+            gap: 0.8rem;
+            margin-top: 1rem;
         }
 
         .btn-cancel {
             flex: 1;
-            padding: 0.7rem;
-            background: #334155;
-            color: #f1f5f9;
+            padding: 0.8rem;
+            background: #f1f5f9;
+            color: #64748b;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 0.95rem;
         }
 
         .btn-save {
-            flex: 1;
-            padding: 0.7rem;
+            flex: 2;
+            padding: 0.8rem;
             background: #6366f1;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
         }
 
-        .error-msg {
-            color: #f87171;
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-            display: none;
+        .btn-save:hover { background: #4f46e5; }
+        .btn-save:disabled { background: #a5b4fc; cursor: not-allowed; }
+
+        /* Category Modal */
+        .add-category-link {
+            font-size: 0.82rem;
+            color: #6366f1;
+            cursor: pointer;
+            margin-top: 0.3rem;
+            display: inline-block;
         }
+
+        .add-category-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="logo">📦 Inventory</div>
-        <a href="index.html" class="nav-item">📊 Dashboard</a>
-        <a href="products.html" class="nav-item active">🏷️ Products</a>
-        <a href="purchases.html" class="nav-item">🛒 Purchases</a>
-        <a href="sales.html" class="nav-item">💰 Sales</a>
-        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        <div class="sidebar-logo">📦 Inventory</div>
+        <nav>
+            <a href="index.html" class="nav-item">📊 Dashboard</a>
+            <a href="products.html" class="nav-item active">🏷️ Products</a>
+            <a href="purchases.html" class="nav-item">🛒 Purchases</a>
+            <a href="sales.html" class="nav-item">💰 Sales</a>
+        </nav>
+        <button class="logout-btn" id="logout-btn">🚪 Logout</button>
     </div>
 
     <!-- Main -->
     <div class="main">
         <div class="top-bar">
-            <div class="page-title">🏷️ Products</div>
-            <button class="btn-primary" id="add-product-btn">+ Add Product</button>
+            <div>
+                <h1>🏷️ Products</h1>
+                <p>सबै products र stock हेर्नुस्</p>
+            </div>
+            <button class="btn-primary" id="add-product-btn">+ नयाँ Product थप्नुस्</button>
         </div>
 
+        <!-- Summary -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="s-label">📦 कुल Products</div>
+                <div class="s-value" id="total-products">-</div>
+            </div>
+            <div class="summary-card">
+                <div class="s-label">⚠️ Low Stock</div>
+                <div class="s-value" style="color:#dc2626" id="low-stock-count">-</div>
+            </div>
+            <div class="summary-card">
+                <div class="s-label">🗂️ Categories</div>
+                <div class="s-value" style="color:#7c3aed" id="total-categories">-</div>
+            </div>
+        </div>
+
+        <!-- Table -->
         <div class="section">
+            <div class="section-header">📋 Products List</div>
             <table>
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>Product</th>
                         <th>SKU</th>
                         <th>Category</th>
                         <th>Cost Price</th>
                         <th>Selling Price</th>
-                        <th>Profit</th>
+                        <th>नाफा</th>
                         <th>Stock</th>
-                        <th>Status</th>
+                        <th>अवस्था</th>
                     </tr>
                 </thead>
                 <tbody id="products-table">
-                    <tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:2rem">Loading...</td></tr>
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <div class="empty-icon">🏷️</div>
+                            Loading...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -258,107 +370,161 @@
     <!-- Add Product Modal -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
-            <h3>➕ Add Product</h3>
+            <div class="modal-header">
+                <h3>➕ नयाँ Product थप्नुस्</h3>
+                <button class="close-btn" id="close-modal">✕</button>
+            </div>
+
+            <div class="error-box" id="modal-error"></div>
 
             <div class="form-group">
-                <label>Category</label>
-                <select id="category">
-                    <option value="">Select category...</option>
+                <label class="form-label">Category *</label>
+                <select class="form-control" id="category">
+                    <option value="">-- Category छान्नुस् --</option>
                 </select>
+                <!-- Category नभए directly थप्न -->
+                <span class="add-category-link" id="add-category-link">
+                    + नयाँ Category थप्नुस्
+                </span>
+            </div>
+
+            <!-- Inline Category Add -->
+            <div class="form-group" id="new-category-group" style="display:none">
+                <label class="form-label">नयाँ Category नाम</label>
+                <div style="display:flex; gap:0.5rem">
+                    <input type="text" class="form-control" id="new-category-name"
+                        placeholder="Category नाम हाल्नुस्">
+                    <button class="btn-save" id="save-category-btn"
+                        style="flex:none; padding:0.8rem 1rem; white-space:nowrap">
+                        थप्नुस्
+                    </button>
+                </div>
             </div>
 
             <div class="form-group">
-                <label>Product Name</label>
-                <input type="text" id="name" placeholder="e.g. Rice 5kg">
+                <label class="form-label">Product नाम *</label>
+                <input type="text" class="form-control" id="name"
+                    placeholder="e.g. Rice 5kg">
             </div>
 
             <div class="form-group">
-                <label>SKU</label>
-                <input type="text" id="sku" placeholder="e.g. RICE-5KG-001">
+                <label class="form-label">SKU *</label>
+                <input type="text" class="form-control" id="sku"
+                    placeholder="e.g. RICE-5KG-001">
             </div>
 
             <div class="form-group">
-                <label>Cost Price (Rs.)</label>
-                <input type="number" id="cost_price" placeholder="0.00">
+                <label class="form-label">Cost Price (Rs.) *</label>
+                <input type="number" class="form-control" id="cost_price"
+                    placeholder="0.00" step="0.01">
             </div>
 
             <div class="form-group">
-                <label>Selling Price (Rs.)</label>
-                <input type="number" id="selling_price" placeholder="0.00">
+                <label class="form-label">Selling Price (Rs.) *</label>
+                <input type="number" class="form-control" id="selling_price"
+                    placeholder="0.00" step="0.01">
             </div>
 
             <div class="form-group">
-                <label>Low Stock Threshold</label>
-                <input type="number" id="low_stock_threshold" placeholder="10" value="10">
+                <label class="form-label">Low Stock Threshold</label>
+                <input type="number" class="form-control" id="low_stock_threshold"
+                    value="10" min="1">
             </div>
-
-            <p class="error-msg" id="modal-error"></p>
 
             <div class="modal-actions">
-                <button class="btn-cancel" id="cancel-btn">Cancel</button>
-                <button class="btn-save" id="save-btn">Save Product</button>
+                <button class="btn-cancel" id="cancel-btn">रद्द गर्नुस्</button>
+                <button class="btn-save" id="save-btn">✅ Product Save गर्नुस्</button>
             </div>
         </div>
     </div>
 
+    <script src="js/api.js"></script>
     <script>
-        const API = 'http://127.0.0.1:8000';
-        const token = localStorage.getItem('access');
-        if (!token) window.location.href = 'login.html';
+        let categoriesCache = [];
 
-        // Auth header
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        };
-
-        // Products load गर्ने
+        // Products load
         async function loadProducts() {
-            const res = await fetch(`${API}/api/products/`, { headers });
-            if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
+            const res = await apiFetch('/api/products/');
             const data = await res.json();
-
+            const products = data.results || data;
             const tbody = document.getElementById('products-table');
 
-            if (data.results?.length === 0 || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding:2rem">कुनै product छैन - थप्नुस्!</td></tr>`;
+            // Summary update
+            document.getElementById('total-products').textContent = products.length;
+            const lowStock = products.filter(p => p.is_low_stock).length;
+            document.getElementById('low-stock-count').textContent = lowStock;
+
+            if (products.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <div class="empty-icon">🏷️</div>
+                            कुनै product छैन - थप्नुस्!
+                        </td>
+                    </tr>`;
                 return;
             }
 
-            // DRF pagination वा direct array handle गर
-            const products = data.results || data;
-
             tbody.innerHTML = products.map(p => `
                 <tr>
-                    <td>${p.name}</td>
-                    <td style="color:#94a3b8">${p.sku}</td>
+                    <td><strong>${p.name}</strong></td>
+                    <td><span class="badge badge-blue">${p.sku}</span></td>
                     <td>${p.category_name}</td>
-                    <td>Rs. ${p.cost_price}</td>
-                    <td>Rs. ${p.selling_price}</td>
-                    <td style="color:#4ade80">Rs. ${p.profit_margin}</td>
-                    <td>${p.current_stock}</td>
+                    <td>Rs. ${parseFloat(p.cost_price).toLocaleString()}</td>
+                    <td>Rs. ${parseFloat(p.selling_price).toLocaleString()}</td>
+                    <td><span class="badge badge-green">
+                        Rs. ${parseFloat(p.profit_margin).toLocaleString()}
+                    </span></td>
+                    <td><strong>${p.current_stock}</strong> थान</td>
                     <td>
                         ${p.is_low_stock
-                            ? '<span class="badge-danger">⚠️ Low Stock</span>'
-                            : '<span class="badge-success">✅ OK</span>'
+                            ? '<span class="badge badge-red">⚠️ कम छ</span>'
+                            : '<span class="badge badge-green">✅ ठीक छ</span>'
                         }
                     </td>
                 </tr>
             `).join('');
         }
 
-        // Categories load गर्ने (modal को लागि)
+        // Categories load
         async function loadCategories() {
-            const res = await fetch(`${API}/api/categories/`, { headers });
+            const res = await apiFetch('/api/categories/');
             const data = await res.json();
-            const categories = data.results || data;
+            categoriesCache = data.results || data;
             const select = document.getElementById('category');
-            categories.forEach(c => {
+
+            // Clear old options except first
+            select.innerHTML = '<option value="">-- Category छान्नुस् --</option>';
+
+            categoriesCache.forEach(c => {
                 select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
             });
+
+            document.getElementById('total-categories').textContent = categoriesCache.length;
         }
 
-        // Product save गर्ने
+        // Inline Category save
+        async function saveCategory() {
+            const name = document.getElementById('new-category-name').value.trim();
+            if (!name) return;
+
+            const res = await apiFetch('/api/categories/', {
+                method: 'POST',
+                body: JSON.stringify({ name })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                await loadCategories();
+                // नयाँ बनेको category auto-select गर
+                document.getElementById('category').value = data.id;
+                document.getElementById('new-category-group').style.display = 'none';
+                document.getElementById('new-category-name').value = '';
+            }
+        }
+
+        // Product save
         async function saveProduct() {
             const errorEl = document.getElementById('modal-error');
             errorEl.style.display = 'none';
@@ -372,16 +538,18 @@
                 low_stock_threshold: document.getElementById('low_stock_threshold').value,
             };
 
-            // Basic validation
             if (!body.category || !body.name || !body.sku || !body.cost_price || !body.selling_price) {
-                errorEl.textContent = 'सबै fields भर्नुस्!';
+                errorEl.textContent = 'सबै * fields भर्नुस्!';
                 errorEl.style.display = 'block';
                 return;
             }
 
-            const res = await fetch(`${API}/api/products/`, {
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            const res = await apiFetch('/api/products/', {
                 method: 'POST',
-                headers,
                 body: JSON.stringify(body)
             });
 
@@ -389,41 +557,48 @@
 
             if (res.ok) {
                 closeModal();
-                loadProducts(); // Table refresh गर
+                loadProducts();
             } else {
-                // Django को error message देखाउ
                 const errors = Object.values(data).flat().join(' ');
                 errorEl.textContent = errors;
                 errorEl.style.display = 'block';
             }
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = '✅ Product Save गर्नुस्';
         }
 
-        // Modal open/close
+        // Modal
         function openModal() {
             document.getElementById('modal').classList.add('active');
         }
 
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
-            // Form reset गर
             ['name', 'sku', 'cost_price', 'selling_price'].forEach(id => {
                 document.getElementById(id).value = '';
             });
             document.getElementById('low_stock_threshold').value = '10';
             document.getElementById('category').value = '';
+            document.getElementById('new-category-group').style.display = 'none';
+            document.getElementById('modal-error').style.display = 'none';
         }
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        }
+        // Category toggle
+        document.getElementById('add-category-link').addEventListener('click', () => {
+            const group = document.getElementById('new-category-group');
+            group.style.display = group.style.display === 'none' ? 'block' : 'none';
+        });
 
-        // Event listeners
+        // Events
         document.getElementById('add-product-btn').addEventListener('click', openModal);
         document.getElementById('cancel-btn').addEventListener('click', closeModal);
+        document.getElementById('close-modal').addEventListener('click', closeModal);
         document.getElementById('save-btn').addEventListener('click', saveProduct);
+        document.getElementById('save-category-btn').addEventListener('click', saveCategory);
+        document.getElementById('logout-btn').addEventListener('click', logout);
 
-        // Initialize
+        // Init
         loadProducts();
         loadCategories();
     </script>
