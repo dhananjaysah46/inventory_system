@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Inventory</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -50,8 +55,15 @@
             transition: all 0.2s;
         }
 
-        .nav-item:hover { background: #f0f4ff; color: #6366f1; }
-        .nav-item.active { background: #6366f1; color: white; }
+        .nav-item:hover {
+            background: #f0f4ff;
+            color: #6366f1;
+        }
+
+        .nav-item.active {
+            background: #6366f1;
+            color: white;
+        }
 
         .logout-btn {
             margin-top: auto;
@@ -65,7 +77,9 @@
             width: 100%;
         }
 
-        .logout-btn:hover { background: #fee2e2; }
+        .logout-btn:hover {
+            background: #fee2e2;
+        }
 
         /* Main */
         .main {
@@ -102,7 +116,7 @@
             padding: 1.5rem;
             border-radius: 14px;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .stat-card .icon {
@@ -122,8 +136,13 @@
             color: #1e293b;
         }
 
-        .stat-card.warning .value { color: #dc2626; }
-        .stat-card.success .value { color: #16a34a; }
+        .stat-card.warning .value {
+            color: #dc2626;
+        }
+
+        .stat-card.success .value {
+            color: #16a34a;
+        }
 
         /* Tables */
         .section {
@@ -132,7 +151,7 @@
             border: 1px solid #e2e8f0;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .section-header {
@@ -144,7 +163,10 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
-        table { width: 100%; border-collapse: collapse; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
         th {
             text-align: left;
@@ -170,9 +192,20 @@
             font-weight: 500;
         }
 
-        .badge-red { background: #fef2f2; color: #dc2626; }
-        .badge-green { background: #f0fdf4; color: #16a34a; }
-        .badge-blue { background: #eff6ff; color: #2563eb; }
+        .badge-red {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .badge-green {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .badge-blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
 
         .empty-state {
             text-align: center;
@@ -181,7 +214,9 @@
             font-size: 0.95rem;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -231,6 +266,23 @@
             </div>
         </div>
 
+        <!-- Charts Section -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem">
+
+            <!-- Sales Trend -->
+            <div class="section">
+                <div class="section-header">📈 Last 7 Days - बिक्री Trend</div>
+                <canvas id="salesChart" height="120"></canvas>
+            </div>
+
+            <!-- Top Products -->
+            <div class="section">
+                <div class="section-header">🏆 Top Selling Products</div>
+                <canvas id="topProductsChart" height="120"></canvas>
+            </div>
+
+        </div>
+
         <!-- Low Stock -->
         <div class="section">
             <div class="section-header">⚠️ Low Stock Alert</div>
@@ -244,7 +296,9 @@
                     </tr>
                 </thead>
                 <tbody id="low-stock-table">
-                    <tr><td colspan="4" class="empty-state">Loading...</td></tr>
+                    <tr>
+                        <td colspan="4" class="empty-state">Loading...</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -261,7 +315,9 @@
                     </tr>
                 </thead>
                 <tbody id="top-products-table">
-                    <tr><td colspan="3" class="empty-state">Loading...</td></tr>
+                    <tr>
+                        <td colspan="3" class="empty-state">Loading...</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -313,7 +369,93 @@
 
         document.getElementById('logout-btn').addEventListener('click', logout);
 
+        async function loadCharts() {
+            const res = await apiFetch('/api/dashboard/');
+            const data = await res.json();
+
+            // ── Line Chart - Real Data ──
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: data.last_7_days.map(d => {
+                        const date = new Date(d.date);
+                        return date.toLocaleDateString('ne-NP', {
+                            month: 'short', day: 'numeric'
+                        });
+                    }),
+                    datasets: [{
+                        label: 'बिक्री (Rs.)',
+                        data: data.last_7_days.map(d => d.revenue), // ← real data
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99,102,241,0.08)',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#6366f1',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                callback: val => `Rs.${val.toLocaleString()}`
+                            }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // ── Bar Chart - Top Products ──
+            const topCtx = document.getElementById('topProductsChart').getContext('2d');
+            const topProducts = data.top_products;
+
+            if (topProducts.length === 0) {
+                topCtx.canvas.parentElement.innerHTML +=
+                    '<p style="text-align:center;color:#94a3b8;padding:2rem">अझै बिक्री छैन</p>';
+                return;
+            }
+
+            new Chart(topCtx, {
+                type: 'bar',
+                data: {
+                    labels: topProducts.map(p => p.product__name),
+                    datasets: [{
+                        label: 'बिक्री (units)',
+                        data: topProducts.map(p => p.total_sold),
+                        backgroundColor: [
+                            'rgba(99,102,241,0.8)',
+                            'rgba(22,163,74,0.8)',
+                            'rgba(234,88,12,0.8)',
+                            'rgba(124,58,237,0.8)',
+                            'rgba(37,99,235,0.8)',
+                        ],
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { stepSize: 1 }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
         loadDashboard();
+        loadCharts();
     </script>
 </body>
+
 </html>

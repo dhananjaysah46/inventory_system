@@ -14,7 +14,6 @@
             display: flex;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 220px;
             background: white;
@@ -62,7 +61,6 @@
             width: 100%;
         }
 
-        /* Main */
         .main {
             margin-left: 220px;
             padding: 2rem;
@@ -88,12 +86,10 @@
             font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
         .btn-primary:hover { background: #4f46e5; }
 
-        /* Summary Cards */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -109,19 +105,9 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
-        .summary-card .s-label {
-            font-size: 0.82rem;
-            color: #94a3b8;
-            margin-bottom: 0.3rem;
-        }
+        .s-label { font-size: 0.82rem; color: #94a3b8; margin-bottom: 0.3rem; }
+        .s-value { font-size: 1.4rem; font-weight: 700; color: #16a34a; }
 
-        .summary-card .s-value {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #16a34a;
-        }
-
-        /* Table */
         .section {
             background: white;
             border-radius: 14px;
@@ -140,6 +126,39 @@
             justify-content: space-between;
             align-items: center;
         }
+
+        .filter-bar {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            color: #1e293b;
+        }
+
+        .filter-input:focus { border-color: #6366f1; }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            color: #1e293b;
+            background: white;
+            cursor: pointer;
+        }
+
+        .filter-select:focus { border-color: #6366f1; }
 
         table { width: 100%; border-collapse: collapse; }
 
@@ -169,15 +188,9 @@
         .badge-green { background: #f0fdf4; color: #16a34a; }
         .badge-blue { background: #eff6ff; color: #2563eb; }
 
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #94a3b8;
-        }
+        .empty-state { text-align: center; padding: 3rem; color: #94a3b8; }
+        .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
 
-        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
-
-        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -240,7 +253,6 @@
 
         .form-control:focus { border-color: #6366f1; }
 
-        /* Product select गर्दा info देखाउने */
         .product-info {
             background: #f8faff;
             border: 1px solid #e2e8f0;
@@ -254,7 +266,6 @@
         .product-info.active { display: block; }
         .product-info span { color: #6366f1; font-weight: 600; }
 
-        /* Total preview */
         .total-preview {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
@@ -265,7 +276,8 @@
         }
 
         .total-preview.active { display: block; }
-        .total-preview .t-row {
+
+        .t-row {
             display: flex;
             justify-content: space-between;
             font-size: 0.9rem;
@@ -273,7 +285,7 @@
             margin-bottom: 0.3rem;
         }
 
-        .total-preview .t-row.total {
+        .t-row.total {
             font-weight: 700;
             font-size: 1rem;
             color: #16a34a;
@@ -293,11 +305,7 @@
             display: none;
         }
 
-        .modal-actions {
-            display: flex;
-            gap: 0.8rem;
-            margin-top: 1rem;
-        }
+        .modal-actions { display: flex; gap: 0.8rem; margin-top: 1rem; }
 
         .btn-cancel {
             flex: 1;
@@ -307,7 +315,6 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 0.95rem;
         }
 
         .btn-save {
@@ -368,9 +375,24 @@
 
         <!-- Sales Table -->
         <div class="section">
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="text" id="search-input" class="filter-input"
+                    placeholder="🔍 Product वा Customer खोज्नुस्...">
+                <select id="date-filter" class="filter-select">
+                    <option value="all">📅 सबै मिति</option>
+                    <option value="today">आज मात्र</option>
+                    <option value="week">यो हप्ता</option>
+                    <option value="month">यो महिना</option>
+                </select>
+            </div>
+
             <div class="section-header">
                 <span>📋 बिक्री Records</span>
+                <span id="result-count" style="font-size:0.85rem; color:#94a3b8; font-weight:400"></span>
             </div>
+
             <table>
                 <thead>
                     <tr>
@@ -395,7 +417,7 @@
         </div>
     </div>
 
-    <!-- Add Sale Modal -->
+    <!-- Modal -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <div class="modal-header">
@@ -410,7 +432,6 @@
                 <select class="form-control" id="product">
                     <option value="">-- Product छान्नुस् --</option>
                 </select>
-                <!-- Product info - select गरेपछि देखिन्छ -->
                 <div class="product-info" id="product-info">
                     Stock: <span id="info-stock">-</span> |
                     Price: Rs. <span id="info-price">-</span>
@@ -435,7 +456,6 @@
                     placeholder="0.00" step="0.01">
             </div>
 
-            <!-- Total Preview -->
             <div class="total-preview" id="total-preview">
                 <div class="t-row">
                     <span>Quantity:</span>
@@ -460,92 +480,50 @@
 
     <script src="js/api.js"></script>
     <script>
-        // Date
         document.getElementById('today-date').textContent =
             new Date().toLocaleDateString('ne-NP', {
                 year: 'numeric', month: 'long', day: 'numeric'
             });
 
-        let products = []; // products cache
+        let allSales = [];
+        let products = [];
 
-        // Products load
+        // ── Products Load (Modal को लागि) ──
         async function loadProducts() {
             const res = await apiFetch('/api/products/');
             const data = await res.json();
             products = data.results || data;
-
             const select = document.getElementById('product');
+
             products.forEach(p => {
-                select.innerHTML += `<option value="${p.id}"
-                    data-stock="${p.current_stock}"
-                    data-price="${p.selling_price}"
-                    data-cost="${p.cost_price}">
-                    ${p.name} (Stock: ${p.current_stock})
-                </option>`;
+                select.innerHTML += `
+                    <option value="${p.id}"
+                        data-stock="${p.current_stock}"
+                        data-price="${p.selling_price}">
+                        ${p.name} (Stock: ${p.current_stock})
+                    </option>`;
             });
         }
 
-        // Product select गर्दा info देखाउने
-        document.getElementById('product').addEventListener('change', function () {
-            const selected = this.options[this.selectedIndex];
-            const stock = selected.dataset.stock;
-            const price = selected.dataset.price;
-
-            if (this.value) {
-                document.getElementById('info-stock').textContent = stock;
-                document.getElementById('info-price').textContent = price;
-                document.getElementById('product-info').classList.add('active');
-                document.getElementById('unit_price').value = price; // auto fill
-            } else {
-                document.getElementById('product-info').classList.remove('active');
-            }
-            updatePreview();
-        });
-
-        // Total preview update
-        function updatePreview() {
-            const qty = parseFloat(document.getElementById('quantity').value) || 0;
-            const price = parseFloat(document.getElementById('unit_price').value) || 0;
-
-            if (qty > 0 && price > 0) {
-                const total = qty * price;
-                document.getElementById('prev-qty').textContent = qty;
-                document.getElementById('prev-price').textContent = `Rs. ${price}`;
-                document.getElementById('prev-total').textContent = `Rs. ${total.toLocaleString()}`;
-                document.getElementById('total-preview').classList.add('active');
-            } else {
-                document.getElementById('total-preview').classList.remove('active');
-            }
-        }
-
-        document.getElementById('quantity').addEventListener('input', updatePreview);
-        document.getElementById('unit_price').addEventListener('input', updatePreview);
-
-        // Dashboard summary load
-        async function loadSummary() {
-            const res = await apiFetch('/api/dashboard/');
-            const data = await res.json();
-            document.getElementById('today-revenue').textContent =
-                `Rs. ${parseFloat(data.today.revenue).toLocaleString()}`;
-            document.getElementById('today-profit').textContent =
-                `Rs. ${parseFloat(data.today.profit).toLocaleString()}`;
-            document.getElementById('today-count').textContent =
-                data.today.sales_count;
-        }
-
-        // Sales list load
+        // ── Sales Load ──
         async function loadSales() {
             const res = await apiFetch('/api/sales/');
             const data = await res.json();
-            const sales = data.results || data;
+            allSales = data.results || data;
+            renderSales(allSales);
+        }
+
+        // ── Render Sales ──
+        function renderSales(sales) {
             const tbody = document.getElementById('sales-table');
+            document.getElementById('result-count').textContent = `(${sales.length} वटा)`;
 
             if (sales.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="7" class="empty-state">
-                            <div class="empty-icon">💰</div>
-                            अझै कुनै बिक्री छैन - थप्नुस्!
+                            <div class="empty-icon">🔍</div>
+                            कुनै record भेटिएन!
                         </td>
                     </tr>`;
                 return;
@@ -558,13 +536,92 @@
                     <td><span class="badge badge-blue">${s.quantity} थान</span></td>
                     <td>Rs. ${s.unit_price}</td>
                     <td><strong>Rs. ${parseFloat(s.total_revenue).toLocaleString()}</strong></td>
-                    <td><span class="badge badge-green">Rs. ${parseFloat(s.total_profit).toLocaleString()}</span></td>
-                    <td style="color:#94a3b8">${new Date(s.created_at).toLocaleDateString('ne-NP')}</td>
+                    <td><span class="badge badge-green">
+                        Rs. ${parseFloat(s.total_profit).toLocaleString()}
+                    </span></td>
+                    <td style="color:#94a3b8">
+                        ${new Date(s.created_at).toLocaleDateString('ne-NP')}
+                    </td>
                 </tr>
             `).join('');
         }
 
-        // Sale save
+        // ── Filter Logic ──
+        function applyFilters() {
+            const search = document.getElementById('search-input').value.toLowerCase().trim();
+            const dateFilter = document.getElementById('date-filter').value;
+            const now = new Date();
+
+            let filtered = allSales;
+
+            if (search) {
+                filtered = filtered.filter(s =>
+                    s.product_name.toLowerCase().includes(search) ||
+                    (s.customer_name && s.customer_name.toLowerCase().includes(search))
+                );
+            }
+
+            if (dateFilter === 'today') {
+                filtered = filtered.filter(s =>
+                    new Date(s.created_at).toDateString() === now.toDateString()
+                );
+            } else if (dateFilter === 'week') {
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                filtered = filtered.filter(s => new Date(s.created_at) >= weekAgo);
+            } else if (dateFilter === 'month') {
+                filtered = filtered.filter(s => {
+                    const d = new Date(s.created_at);
+                    return d.getMonth() === now.getMonth() &&
+                           d.getFullYear() === now.getFullYear();
+                });
+            }
+
+            renderSales(filtered);
+        }
+
+        // ── Summary Load ──
+        async function loadSummary() {
+            const res = await apiFetch('/api/dashboard/');
+            const data = await res.json();
+            document.getElementById('today-revenue').textContent =
+                `Rs. ${parseFloat(data.today.revenue).toLocaleString()}`;
+            document.getElementById('today-profit').textContent =
+                `Rs. ${parseFloat(data.today.profit).toLocaleString()}`;
+            document.getElementById('today-count').textContent = data.today.sales_count;
+        }
+
+        // ── Product Select → Info ──
+        document.getElementById('product').addEventListener('change', function () {
+            const selected = this.options[this.selectedIndex];
+            if (this.value) {
+                document.getElementById('info-stock').textContent = selected.dataset.stock;
+                document.getElementById('info-price').textContent = selected.dataset.price;
+                document.getElementById('product-info').classList.add('active');
+                document.getElementById('unit_price').value = selected.dataset.price;
+            } else {
+                document.getElementById('product-info').classList.remove('active');
+            }
+            updatePreview();
+        });
+
+        // ── Total Preview ──
+        function updatePreview() {
+            const qty = parseFloat(document.getElementById('quantity').value) || 0;
+            const price = parseFloat(document.getElementById('unit_price').value) || 0;
+
+            if (qty > 0 && price > 0) {
+                document.getElementById('prev-qty').textContent = qty;
+                document.getElementById('prev-price').textContent = `Rs. ${price}`;
+                document.getElementById('prev-total').textContent =
+                    `Rs. ${(qty * price).toLocaleString()}`;
+                document.getElementById('total-preview').classList.add('active');
+            } else {
+                document.getElementById('total-preview').classList.remove('active');
+            }
+        }
+
+        // ── Save Sale ──
         async function saveSale() {
             const errorEl = document.getElementById('modal-error');
             errorEl.style.display = 'none';
@@ -580,10 +637,9 @@
                 return;
             }
 
-            // Stock check - frontend level
-            const selected = document.getElementById('product').options[
-                document.getElementById('product').selectedIndex
-            ];
+            const selected = document.getElementById('product')
+                .options[document.getElementById('product').selectedIndex];
+
             if (parseInt(quantity) > parseInt(selected.dataset.stock)) {
                 errorEl.textContent = `Stock पुगेन! Available: ${selected.dataset.stock} थान`;
                 errorEl.style.display = 'block';
@@ -599,8 +655,8 @@
                 body: JSON.stringify({
                     product: productId,
                     quantity: parseInt(quantity),
-                    unit_price: unit_price,
-                    customer_name: customer_name
+                    unit_price,
+                    customer_name
                 })
             });
 
@@ -608,11 +664,10 @@
 
             if (res.ok) {
                 closeModal();
-                loadSales();
-                loadSummary();
+                await loadSales();
+                await loadSummary();
             } else {
-                const errors = Object.values(data).flat().join(' ');
-                errorEl.textContent = errors;
+                errorEl.textContent = Object.values(data).flat().join(' ');
                 errorEl.style.display = 'block';
             }
 
@@ -620,30 +675,33 @@
             saveBtn.textContent = '💰 बिक्री Record गर्नुस्';
         }
 
-        // Modal
+        // ── Modal ──
         function openModal() {
             document.getElementById('modal').classList.add('active');
         }
 
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
-            document.getElementById('product').value = '';
-            document.getElementById('quantity').value = '';
-            document.getElementById('unit_price').value = '';
-            document.getElementById('customer_name').value = '';
+            ['product', 'quantity', 'unit_price', 'customer_name'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
             document.getElementById('product-info').classList.remove('active');
             document.getElementById('total-preview').classList.remove('active');
             document.getElementById('modal-error').style.display = 'none';
         }
 
-        // Events
+        // ── Events ──
+        document.getElementById('search-input').addEventListener('input', applyFilters);
+        document.getElementById('date-filter').addEventListener('change', applyFilters);
         document.getElementById('add-sale-btn').addEventListener('click', openModal);
         document.getElementById('cancel-btn').addEventListener('click', closeModal);
         document.getElementById('close-modal').addEventListener('click', closeModal);
         document.getElementById('save-btn').addEventListener('click', saveSale);
         document.getElementById('logout-btn').addEventListener('click', logout);
+        document.getElementById('quantity').addEventListener('input', updatePreview);
+        document.getElementById('unit_price').addEventListener('input', updatePreview);
 
-        // Init
+        // ── Init ──
         loadProducts();
         loadSales();
         loadSummary();

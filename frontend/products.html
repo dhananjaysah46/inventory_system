@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Inventory</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -47,8 +52,15 @@
             transition: all 0.2s;
         }
 
-        .nav-item:hover { background: #f0f4ff; color: #6366f1; }
-        .nav-item.active { background: #6366f1; color: white; }
+        .nav-item:hover {
+            background: #f0f4ff;
+            color: #6366f1;
+        }
+
+        .nav-item.active {
+            background: #6366f1;
+            color: white;
+        }
 
         .logout-btn {
             margin-top: auto;
@@ -62,7 +74,9 @@
             width: 100%;
         }
 
-        .logout-btn:hover { background: #fee2e2; }
+        .logout-btn:hover {
+            background: #fee2e2;
+        }
 
         /* Main */
         .main {
@@ -78,8 +92,15 @@
             margin-bottom: 1.5rem;
         }
 
-        .top-bar h1 { font-size: 1.5rem; }
-        .top-bar p { color: #94a3b8; font-size: 0.9rem; margin-top: 0.2rem; }
+        .top-bar h1 {
+            font-size: 1.5rem;
+        }
+
+        .top-bar p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
 
         .btn-primary {
             padding: 0.75rem 1.5rem;
@@ -93,7 +114,9 @@
             transition: background 0.2s;
         }
 
-        .btn-primary:hover { background: #4f46e5; }
+        .btn-primary:hover {
+            background: #4f46e5;
+        }
 
         /* Summary Cards */
         .summary-grid {
@@ -108,7 +131,7 @@
             padding: 1.2rem;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .s-label {
@@ -129,7 +152,7 @@
             border-radius: 14px;
             border: 1px solid #e2e8f0;
             padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .section-header {
@@ -140,7 +163,10 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
-        table { width: 100%; border-collapse: collapse; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
         th {
             text-align: left;
@@ -165,10 +191,25 @@
             font-weight: 500;
         }
 
-        .badge-red { background: #fef2f2; color: #dc2626; }
-        .badge-green { background: #f0fdf4; color: #16a34a; }
-        .badge-blue { background: #eff6ff; color: #2563eb; }
-        .badge-purple { background: #f5f3ff; color: #7c3aed; }
+        .badge-red {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .badge-green {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .badge-blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .badge-purple {
+            background: #f5f3ff;
+            color: #7c3aed;
+        }
 
         .empty-state {
             text-align: center;
@@ -176,27 +217,32 @@
             color: #94a3b8;
         }
 
-        .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
 
         /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
             justify-content: center;
             align-items: center;
             z-index: 100;
         }
 
-        .modal-overlay.active { display: flex; }
+        .modal-overlay.active {
+            display: flex;
+        }
 
         .modal {
             background: white;
             border-radius: 16px;
             padding: 2rem;
             width: 440px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -208,7 +254,10 @@
             margin-bottom: 1.5rem;
         }
 
-        .modal-header h3 { font-size: 1.15rem; color: #1e293b; }
+        .modal-header h3 {
+            font-size: 1.15rem;
+            color: #1e293b;
+        }
 
         .close-btn {
             background: #f1f5f9;
@@ -220,7 +269,9 @@
             font-size: 1rem;
         }
 
-        .form-group { margin-bottom: 1.1rem; }
+        .form-group {
+            margin-bottom: 1.1rem;
+        }
 
         .form-label {
             display: block;
@@ -242,7 +293,9 @@
             background: white;
         }
 
-        .form-control:focus { border-color: #6366f1; }
+        .form-control:focus {
+            border-color: #6366f1;
+        }
 
         .error-box {
             background: #fef2f2;
@@ -284,8 +337,14 @@
             font-weight: 600;
         }
 
-        .btn-save:hover { background: #4f46e5; }
-        .btn-save:disabled { background: #a5b4fc; cursor: not-allowed; }
+        .btn-save:hover {
+            background: #4f46e5;
+        }
+
+        .btn-save:disabled {
+            background: #a5b4fc;
+            cursor: not-allowed;
+        }
 
         /* Category Modal */
         .add-category-link {
@@ -296,9 +355,12 @@
             display: inline-block;
         }
 
-        .add-category-link:hover { text-decoration: underline; }
+        .add-category-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
+
 <body>
 
     <!-- Sidebar -->
@@ -338,7 +400,58 @@
                 <div class="s-value" style="color:#7c3aed" id="total-categories">-</div>
             </div>
         </div>
+        <!-- Summary cards पछि यो मात्र राख -->
+        <div class="section">
 
+            <!-- Filter Bar -->
+            <div style="display:flex; gap:0.8rem; margin-bottom:1rem; flex-wrap:wrap">
+                <input type="text" id="search-input" placeholder="🔍 Product नाम वा SKU खोज्नुस्..." style="flex:1; padding:0.75rem 1rem; border:2px solid #e2e8f0;
+            border-radius:10px; font-size:0.95rem; outline:none; color:#1e293b">
+
+                <select id="category-filter" style="padding:0.75rem 1rem; border:2px solid #e2e8f0;
+            border-radius:10px; font-size:0.95rem; outline:none;
+            color:#1e293b; background:white; cursor:pointer">
+                    <option value="">सबै Categories</option>
+                </select>
+
+                <select id="stock-filter" style="padding:0.75rem 1rem; border:2px solid #e2e8f0;
+            border-radius:10px; font-size:0.95rem; outline:none;
+            color:#1e293b; background:white; cursor:pointer">
+                    <option value="">सबै Stock</option>
+                    <option value="low">⚠️ Low Stock मात्र</option>
+                    <option value="ok">✅ ठीक Stock मात्र</option>
+                </select>
+            </div>
+
+            <div class="section-header">
+                📋 Products List
+                <span id="result-count" style="font-size:0.85rem; color:#94a3b8; font-weight:400">
+                </span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Category</th>
+                        <th>Cost Price</th>
+                        <th>Selling Price</th>
+                        <th>नाफा</th>
+                        <th>Stock</th>
+                        <th>अवस्था</th>
+                    </tr>
+                </thead>
+                <tbody id="products-table">
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <div class="empty-icon">🏷️</div>
+                            Loading...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <!-- Table -->
         <div class="section">
             <div class="section-header">📋 Products List</div>
@@ -392,8 +505,7 @@
             <div class="form-group" id="new-category-group" style="display:none">
                 <label class="form-label">नयाँ Category नाम</label>
                 <div style="display:flex; gap:0.5rem">
-                    <input type="text" class="form-control" id="new-category-name"
-                        placeholder="Category नाम हाल्नुस्">
+                    <input type="text" class="form-control" id="new-category-name" placeholder="Category नाम हाल्नुस्">
                     <button class="btn-save" id="save-category-btn"
                         style="flex:none; padding:0.8rem 1rem; white-space:nowrap">
                         थप्नुस्
@@ -403,32 +515,27 @@
 
             <div class="form-group">
                 <label class="form-label">Product नाम *</label>
-                <input type="text" class="form-control" id="name"
-                    placeholder="e.g. Rice 5kg">
+                <input type="text" class="form-control" id="name" placeholder="e.g. Rice 5kg">
             </div>
 
             <div class="form-group">
                 <label class="form-label">SKU *</label>
-                <input type="text" class="form-control" id="sku"
-                    placeholder="e.g. RICE-5KG-001">
+                <input type="text" class="form-control" id="sku" placeholder="e.g. RICE-5KG-001">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Cost Price (Rs.) *</label>
-                <input type="number" class="form-control" id="cost_price"
-                    placeholder="0.00" step="0.01">
+                <input type="number" class="form-control" id="cost_price" placeholder="0.00" step="0.01">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Selling Price (Rs.) *</label>
-                <input type="number" class="form-control" id="selling_price"
-                    placeholder="0.00" step="0.01">
+                <input type="number" class="form-control" id="selling_price" placeholder="0.00" step="0.01">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Low Stock Threshold</label>
-                <input type="number" class="form-control" id="low_stock_threshold"
-                    value="10" min="1">
+                <input type="number" class="form-control" id="low_stock_threshold" value="10" min="1">
             </div>
 
             <div class="modal-actions">
@@ -440,19 +547,27 @@
 
     <script src="js/api.js"></script>
     <script>
+        let allProducts = [];
         let categoriesCache = [];
 
         // Products load
         async function loadProducts() {
             const res = await apiFetch('/api/products/');
             const data = await res.json();
-            const products = data.results || data;
+            allProducts = data.results || data;
+            renderProducts(allProducts);
+        }
+
+        function renderProducts(products) {
             const tbody = document.getElementById('products-table');
 
+            // Result count
+            document.getElementById('result-count').textContent =
+                `(${products.length} वटा)`;
+
             // Summary update
-            document.getElementById('total-products').textContent = products.length;
-            const lowStock = products.filter(p => p.is_low_stock).length;
-            document.getElementById('low-stock-count').textContent = lowStock;
+            document.getElementById('total-products').textContent = allProducts.length;
+            document.getElementById('low-stock-count').textContent = allProducts.filter(p => p.is_low_stock).length;
 
             if (products.length === 0) {
                 tbody.innerHTML = `
@@ -478,26 +593,56 @@
                     <td><strong>${p.current_stock}</strong> थान</td>
                     <td>
                         ${p.is_low_stock
-                            ? '<span class="badge badge-red">⚠️ कम छ</span>'
-                            : '<span class="badge badge-green">✅ ठीक छ</span>'
-                        }
+                    ? '<span class="badge badge-red">⚠️ कम छ</span>'
+                    : '<span class="badge badge-green">✅ ठीक छ</span>'
+                }
                     </td>
                 </tr>
             `).join('');
         }
 
+        function applyFilters() {
+            const search = document.getElementById('search-input').value.trim().toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+            const stockFilter = document.getElementById('stock-filter').value;
+
+            let filtered = allProducts;
+
+            if (search) {
+                filtered = filtered.filter(p =>
+                    p.name.toLowerCase().includes(search) ||
+                    p.sku.toLowerCase().includes(search)
+                );
+            }
+
+            if (categoryFilter) {
+                filtered = filtered.filter(p => p.category.toString() === categoryFilter);
+            }
+
+            if (stockFilter === 'low') {
+                filtered = filtered.filter(p => p.is_low_stock);
+            } else if (stockFilter === 'ok') {
+                filtered = filtered.filter(p => !p.is_low_stock);
+            }
+
+            renderProducts(filtered);
+        }
         // Categories load
         async function loadCategories() {
             const res = await apiFetch('/api/categories/');
             const data = await res.json();
             categoriesCache = data.results || data;
-            const select = document.getElementById('category');
+
+            const modalSelect = document.getElementById('category');
 
             // Clear old options except first
-            select.innerHTML = '<option value="">-- Category छान्नुस् --</option>';
+            modalSelect.innerHTML = '<option value="">-- Category छान्नुस् --</option>';
+
+            const filterSelect = document.getElementById('category-filter');
 
             categoriesCache.forEach(c => {
-                select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                modalSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                filterSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
             });
 
             document.getElementById('total-categories').textContent = categoriesCache.length;
@@ -597,10 +742,14 @@
         document.getElementById('save-btn').addEventListener('click', saveProduct);
         document.getElementById('save-category-btn').addEventListener('click', saveCategory);
         document.getElementById('logout-btn').addEventListener('click', logout);
+        document.getElementById('search-input').addEventListener('input', applyFilters);
+        document.getElementById('category-filter').addEventListener('change', applyFilters);
+        document.getElementById('stock-filter').addEventListener('change', applyFilters);
 
         // Init
         loadProducts();
         loadCategories();
     </script>
 </body>
+
 </html>
