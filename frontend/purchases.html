@@ -4,381 +4,464 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchases - Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --sidebar-bg: #0F172A;
+            --sidebar-hover: #1E293B;
+            --accent: #F59E0B;
+            --accent-light: #FEF3C7;
+            --accent-dark: #D97706;
+            --bg: #F5F4F0;
+            --surface: #FFFFFF;
+            --border: #E8E6E0;
+            --text-primary: #1A1A2E;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
+            --success: #059669;
+            --success-bg: #ECFDF5;
+            --danger: #DC2626;
+            --danger-bg: #FEF2F2;
+            --info: #2563EB;
+            --info-bg: #EFF6FF;
+            --purple: #7C3AED;
+            --purple-bg: #F5F3FF;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f8faff;
-            color: #1e293b;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
             display: flex;
+            min-height: 100vh;
         }
 
-        /* Sidebar */
+        /* ── Sidebar ── */
         .sidebar {
-            width: 220px;
-            background: white;
+            width: 240px;
+            background: var(--sidebar-bg);
             height: 100vh;
             position: fixed;
-            padding: 1.5rem 1rem;
-            border-right: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
+            transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .sidebar.collapsed { width: 68px; }
+
+        .sidebar-top {
+            padding: 1.5rem 1.2rem 1rem;
+            border-bottom: 1px solid #1E293B;
         }
 
         .sidebar-logo {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #6366f1;
-            padding: 0.5rem;
-            margin-bottom: 1.5rem;
+            display: flex; align-items: center;
+            gap: 0.75rem; white-space: nowrap;
         }
+
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: var(--accent); border-radius: 8px;
+            display: flex; align-items: center;
+            justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+        }
+
+        .logo-text { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+        .logo-sub { font-size: 0.7rem; color: #475569; font-weight: 400; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        .toggle-btn {
+            width: 28px; height: 28px;
+            background: #1E293B; color: #94A3B8;
+            border: 1px solid #334155; border-radius: 6px;
+            cursor: pointer; font-size: 0.75rem;
+            display: flex; align-items: center; justify-content: center;
+            margin: 1rem 1.2rem; transition: all 0.2s;
+        }
+
+        .toggle-btn:hover { background: #334155; color: #fff; }
+
+        .sidebar-nav { flex: 1; padding: 0.5rem 0.8rem; }
+
+        .nav-label {
+            font-size: 0.65rem; font-weight: 600; color: #334155;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            padding: 0.5rem 0.4rem; white-space: nowrap;
+        }
+
+        .sidebar.collapsed .nav-label { opacity: 0; }
 
         .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            padding: 0.75rem 1rem;
-            color: #64748b;
-            text-decoration: none;
-            border-radius: 10px;
-            margin-bottom: 0.3rem;
-            font-size: 0.95rem;
-            transition: all 0.2s;
+            display: flex; align-items: center; gap: 0.8rem;
+            padding: 0.65rem 0.8rem; color: #94A3B8;
+            text-decoration: none; border-radius: 8px;
+            margin-bottom: 0.2rem; font-size: 0.9rem;
+            font-weight: 500; transition: all 0.15s; white-space: nowrap;
         }
 
-        .nav-item:hover { background: #f0f4ff; color: #6366f1; }
-        .nav-item.active { background: #6366f1; color: white; }
+        .nav-item:hover { background: var(--sidebar-hover); color: #E2E8F0; }
+
+        .nav-item.active {
+            background: #1C2A44; color: var(--accent);
+            border-left: 3px solid var(--accent);
+            padding-left: calc(0.8rem - 3px);
+        }
+
+        .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; flex-shrink: 0; }
+
+        .sidebar.collapsed .nav-text,
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .logo-sub { opacity: 0; width: 0; overflow: hidden; }
+        .sidebar.collapsed .nav-item { justify-content: center; padding: 0.65rem; }
+        .sidebar.collapsed .nav-item.active { border-left: none; padding: 0.65rem; }
+
+        .sidebar-bottom { padding: 1rem 0.8rem; border-top: 1px solid #1E293B; }
 
         .logout-btn {
-            margin-top: auto;
-            padding: 0.75rem;
-            background: #fef2f2;
-            color: #dc2626;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            width: 100%;
+            display: flex; align-items: center; gap: 0.8rem;
+            padding: 0.65rem 0.8rem; color: #64748B;
+            background: none; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 0.9rem; font-weight: 500;
+            width: 100%; transition: all 0.15s; white-space: nowrap;
+            font-family: 'Outfit', sans-serif;
         }
 
-        .logout-btn:hover { background: #fee2e2; }
+        .logout-btn:hover { background: #1E293B; color: #F87171; }
+        .sidebar.collapsed .logout-btn { justify-content: center; }
+        .sidebar.collapsed .logout-text { opacity: 0; width: 0; overflow: hidden; }
 
-        /* Main */
+        /* ── Main ── */
         .main {
-            margin-left: 220px;
-            padding: 2rem;
+            margin-left: 240px;
+            padding: 2rem 2.5rem;
             width: 100%;
+            transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1);
         }
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
+        .main.expanded { margin-left: 68px; }
+
+        .page-header {
+            display: flex; justify-content: space-between;
+            align-items: flex-start; margin-bottom: 2rem;
         }
 
-        .top-bar h1 { font-size: 1.5rem; }
-        .top-bar p { color: #94a3b8; font-size: 0.9rem; margin-top: 0.2rem; }
+        .page-title { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
+        .page-subtitle { font-size: 0.88rem; color: var(--text-muted); margin-top: 0.2rem; }
 
         .btn-primary {
-            padding: 0.75rem 1.5rem;
-            background: #6366f1;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.65rem 1.2rem;
+            background: var(--accent); color: #1A1A2E;
+            border: none; border-radius: 8px;
+            font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; transition: background 0.15s;
+            font-family: 'Outfit', sans-serif;
         }
 
-        .btn-primary:hover { background: #4f46e5; }
+        .btn-primary:hover { background: var(--accent-dark); color: #fff; }
 
-        /* Summary Cards */
+        /* ── Summary Cards ── */
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
 
         .summary-card {
-            background: white;
-            padding: 1.2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            padding: 1.2rem 1.4rem;
+            position: relative; overflow: hidden;
         }
 
-        .summary-card .s-label {
-            font-size: 0.82rem;
-            color: #94a3b8;
-            margin-bottom: 0.3rem;
+        .summary-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            border-radius: 12px 12px 0 0;
         }
 
-        .summary-card .s-value {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #6366f1;
+        .summary-card.purple::before { background: var(--purple); }
+        .summary-card.orange::before { background: #EA580C; }
+        .summary-card.green::before { background: var(--success); }
+
+        .s-label {
+            font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem;
         }
 
-        /* Table Section */
-        .section {
-            background: white;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
-            padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        .s-value {
+            font-size: 1.8rem; font-weight: 700;
+            color: var(--text-primary); letter-spacing: -0.5px;
+            font-family: 'DM Mono', monospace;
         }
 
-        .section-header {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 1px solid #f1f5f9;
+        .s-value.purple { color: var(--purple); }
+        .s-value.orange { color: #EA580C; }
+        .s-value.green { color: var(--success); }
+
+        /* ── Card ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden;
         }
 
-        table { width: 100%; border-collapse: collapse; }
-
-        th {
-            text-align: left;
-            padding: 0.7rem 0.8rem;
-            color: #94a3b8;
-            font-size: 0.82rem;
-            font-weight: 600;
-            text-transform: uppercase;
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.4rem; border-bottom: 1px solid var(--border);
+            background: #FAFAF8;
         }
 
-        td {
-            padding: 0.9rem 0.8rem;
-            font-size: 0.92rem;
-            color: #334155;
-            border-top: 1px solid #f1f5f9;
+        .card-title { font-size: 0.88rem; font-weight: 600; }
+
+        .result-count {
+            font-size: 0.8rem; color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
         }
+
+        /* ── Table ── */
+        .data-table { width: 100%; border-collapse: collapse; }
+
+        .data-table th {
+            text-align: left; padding: 0.7rem 1rem;
+            font-size: 0.72rem; font-weight: 600;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.06em; background: #FAFAF8;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 0.85rem 1rem; font-size: 0.88rem;
+            color: var(--text-primary); border-bottom: 1px solid #F5F4F0;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: #FAFAF8; }
 
         .badge {
-            padding: 0.25rem 0.7rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            display: inline-flex; align-items: center;
+            padding: 0.2rem 0.6rem; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600;
+            font-family: 'DM Mono', monospace;
         }
 
-        .badge-purple { background: #f5f3ff; color: #7c3aed; }
-        .badge-blue { background: #eff6ff; color: #2563eb; }
-        .badge-orange { background: #fff7ed; color: #ea580c; }
+        .badge-info { background: var(--info-bg); color: var(--info); }
+        .badge-orange { background: #FFF7ED; color: #EA580C; }
+        .badge-purple { background: var(--purple-bg); color: var(--purple); }
 
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #94a3b8;
-        }
+        .empty-state { text-align: center; padding: 3rem; color: var(--text-muted); }
+        .empty-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
 
-        .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
-
-        /* Modal */
+        /* ── Modal ── */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+            display: none; position: fixed;
+            inset: 0; background: rgba(15,23,42,0.6);
+            justify-content: center; align-items: center;
+            z-index: 200; backdrop-filter: blur(2px);
         }
 
         .modal-overlay.active { display: flex; }
 
         .modal {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            width: 440px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            background: var(--surface); border-radius: 16px;
+            width: 460px; box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+            max-height: 90vh; overflow-y: auto;
         }
 
         .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.3rem 1.5rem; border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; background: var(--surface); z-index: 1;
         }
 
-        .modal-header h3 { font-size: 1.15rem; color: #1e293b; }
+        .modal-header h3 { font-size: 1.05rem; font-weight: 700; }
 
         .close-btn {
-            background: #f1f5f9;
-            border: none;
-            border-radius: 8px;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            font-size: 1rem;
+            width: 32px; height: 32px;
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 8px; cursor: pointer; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-secondary);
         }
+
+        .close-btn:hover { background: var(--danger-bg); color: var(--danger); }
+
+        .modal-body { padding: 1.5rem; }
 
         .form-group { margin-bottom: 1.1rem; }
 
         .form-label {
-            display: block;
-            font-size: 0.88rem;
-            font-weight: 500;
-            color: #475569;
-            margin-bottom: 0.4rem;
+            display: block; font-size: 0.82rem; font-weight: 600;
+            color: var(--text-secondary); margin-bottom: 0.4rem;
+            text-transform: uppercase; letter-spacing: 0.04em;
         }
 
         .form-control {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            color: #1e293b;
-            outline: none;
-            transition: border 0.2s;
+            width: 100%; padding: 0.7rem 1rem;
+            border: 1.5px solid var(--border); border-radius: 8px;
+            font-size: 0.92rem; color: var(--text-primary);
+            outline: none; transition: border 0.15s;
+            background: var(--surface); font-family: 'Outfit', sans-serif;
         }
 
-        .form-control:focus { border-color: #6366f1; }
+        .form-control:focus { border-color: var(--accent); }
 
-        /* Product select info */
+        /* Product Info */
         .product-info {
-            background: #f8faff;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.8rem 1rem;
-            margin-top: 0.5rem;
-            display: none;
-            font-size: 0.88rem;
-            color: #475569;
+            background: var(--accent-light);
+            border: 1px solid #FDE68A; border-radius: 8px;
+            padding: 0.7rem 1rem; margin-top: 0.5rem;
+            display: none; font-size: 0.85rem;
+            color: var(--accent-dark); font-weight: 500;
         }
 
-        .product-info.active { display: block; }
-        .product-info span { color: #6366f1; font-weight: 600; }
+        .product-info.active { display: flex; gap: 1rem; }
 
         /* Total Preview */
         .total-preview {
-            background: #f5f3ff;
-            border: 1px solid #ddd6fe;
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 1rem 0;
-            display: none;
+            background: var(--purple-bg);
+            border: 1px solid #DDD6FE; border-radius: 10px;
+            padding: 1rem 1.2rem; margin: 1rem 0; display: none;
         }
 
         .total-preview.active { display: block; }
 
         .t-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: #475569;
-            margin-bottom: 0.3rem;
+            display: flex; justify-content: space-between;
+            font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.3rem;
         }
 
         .t-row.total {
-            font-weight: 700;
-            font-size: 1rem;
-            color: #7c3aed;
-            border-top: 1px solid #ddd6fe;
-            padding-top: 0.5rem;
-            margin-top: 0.3rem;
+            font-weight: 700; font-size: 1rem; color: var(--purple);
+            border-top: 1px solid #DDD6FE;
+            padding-top: 0.5rem; margin-top: 0.3rem;
         }
 
         .error-box {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            padding: 0.7rem 1rem;
-            border-radius: 8px;
-            font-size: 0.88rem;
-            margin-bottom: 1rem;
-            display: none;
+            background: var(--danger-bg); border: 1px solid #FECACA;
+            color: var(--danger); padding: 0.7rem 1rem;
+            border-radius: 8px; font-size: 0.85rem;
+            margin-bottom: 1rem; display: none;
         }
 
-        .modal-actions {
-            display: flex;
-            gap: 0.8rem;
-            margin-top: 1rem;
+        .modal-footer {
+            display: flex; gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            background: #FAFAF8;
         }
 
         .btn-cancel {
-            flex: 1;
-            padding: 0.8rem;
-            background: #f1f5f9;
-            color: #64748b;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.95rem;
+            flex: 1; padding: 0.75rem;
+            background: var(--surface); color: var(--text-secondary);
+            border: 1.5px solid var(--border); border-radius: 8px;
+            cursor: pointer; font-size: 0.9rem; font-weight: 600;
+            font-family: 'Outfit', sans-serif;
         }
+
+        .btn-cancel:hover { background: var(--bg); }
 
         .btn-save {
-            flex: 2;
-            padding: 0.8rem;
-            background: #6366f1;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            font-weight: 600;
+            flex: 2; padding: 0.75rem;
+            background: var(--accent); color: #1A1A2E;
+            border: none; border-radius: 8px;
+            cursor: pointer; font-size: 0.9rem; font-weight: 700;
+            font-family: 'Outfit', sans-serif; transition: background 0.15s;
         }
 
-        .btn-save:hover { background: #4f46e5; }
-        .btn-save:disabled { background: #a5b4fc; cursor: not-allowed; }
+        .btn-save:hover { background: var(--accent-dark); color: #fff; }
+        .btn-save:disabled { background: #FDE68A; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-logo">📦 Inventory</div>
-        <nav>
-            <a href="index.html" class="nav-item">📊 Dashboard</a>
-            <a href="products.html" class="nav-item">🏷️ Products</a>
-            <a href="purchases.html" class="nav-item active">🛒 Purchases</a>
-            <a href="sales.html" class="nav-item">💰 Sales</a>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <div class="sidebar-logo">
+                <div class="logo-icon">📦</div>
+                <div>
+                    <div class="logo-text">Inventory</div>
+                    <div class="logo-sub">Management</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="toggle-btn" id="toggle-btn">◀</button>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main Menu</div>
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="products.html" class="nav-item">
+                <span class="nav-icon">🏷️</span>
+                <span class="nav-text">Products</span>
+            </a>
+            <a href="purchases.html" class="nav-item active">
+                <span class="nav-icon">🛒</span>
+                <span class="nav-text">Purchases</span>
+            </a>
+            <a href="sales.html" class="nav-item">
+                <span class="nav-icon">💰</span>
+                <span class="nav-text">Sales</span>
+            </a>
         </nav>
-        <button class="logout-btn" id="logout-btn">🚪 Logout</button>
+
+        <div class="sidebar-bottom">
+            <button class="logout-btn" id="logout-btn">
+                <span class="nav-icon">🚪</span>
+                <span class="logout-text">Logout</span>
+            </button>
+        </div>
     </div>
 
     <!-- Main -->
-    <div class="main">
-        <div class="top-bar">
+    <div class="main" id="main">
+        <div class="page-header">
             <div>
-                <h1>🛒 खरिद (Purchases)</h1>
-                <p>आजको मिति: <span id="today-date"></span></p>
+                <div class="page-title">Purchases — खरिद</div>
+                <div class="page-subtitle" id="today-date"></div>
             </div>
-            <button class="btn-primary" id="add-purchase-btn">
-                + नयाँ खरिद थप्नुस्
-            </button>
+            <button class="btn-primary" id="add-purchase-btn">+ नयाँ खरिद</button>
         </div>
 
-        <!-- Summary Cards -->
+        <!-- Summary -->
         <div class="summary-grid">
-            <div class="summary-card">
-                <div class="s-label">🛒 कुल खरिद (Records)</div>
-                <div class="s-value" id="total-purchases">-</div>
+            <div class="summary-card purple">
+                <div class="s-label">🛒 कुल खरिद Records</div>
+                <div class="s-value purple" id="total-purchases">—</div>
             </div>
-            <div class="summary-card">
+            <div class="summary-card orange">
                 <div class="s-label">💸 आजको खर्च</div>
-                <div class="s-value" style="color:#ea580c" id="today-spent">-</div>
+                <div class="s-value orange" id="today-spent">—</div>
             </div>
-            <div class="summary-card">
+            <div class="summary-card green">
                 <div class="s-label">📦 आज थपिएको Stock</div>
-                <div class="s-value" style="color:#16a34a" id="today-stock-added">-</div>
+                <div class="s-value green" id="today-stock">—</div>
             </div>
         </div>
 
-        <!-- Purchases Table -->
-        <div class="section">
-            <div class="section-header">📋 खरिद Records</div>
-            <table>
+        <!-- Table Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">खरिद Records</div>
+                <div class="result-count" id="result-count"></div>
+            </div>
+
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>Product</th>
                         <th>Supplier</th>
-                        <th>Quantity</th>
+                        <th>Qty</th>
                         <th>Unit Cost</th>
                         <th>कुल खर्च</th>
                         <th>मिति</th>
@@ -396,7 +479,7 @@
         </div>
     </div>
 
-    <!-- Add Purchase Modal -->
+    <!-- Modal -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <div class="modal-header">
@@ -404,88 +487,175 @@
                 <button class="close-btn" id="close-modal">✕</button>
             </div>
 
-            <div class="error-box" id="modal-error"></div>
+            <div class="modal-body">
+                <div class="error-box" id="modal-error"></div>
 
-            <div class="form-group">
-                <label class="form-label">Product छान्नुस् *</label>
-                <select class="form-control" id="product">
-                    <option value="">-- Product छान्नुस् --</option>
-                </select>
-                <!-- Product को current stock देखाउने -->
-                <div class="product-info" id="product-info">
-                    हालको Stock: <span id="info-stock">-</span> थान
+                <div class="form-group">
+                    <label class="form-label">Product *</label>
+                    <select class="form-control" id="product">
+                        <option value="">— Product छान्नुस् —</option>
+                    </select>
+                    <div class="product-info" id="product-info">
+                        <span>📦 हालको Stock: <strong id="info-stock">—</strong> थान</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Supplier नाम *</label>
+                    <input type="text" class="form-control" id="supplier_name"
+                        placeholder="Supplier को नाम हाल्नुस्">
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem">
+                    <div class="form-group">
+                        <label class="form-label">Quantity *</label>
+                        <input type="number" class="form-control" id="quantity"
+                            placeholder="कति थान?" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Unit Cost (Rs.) *</label>
+                        <input type="number" class="form-control" id="unit_cost"
+                            placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+
+                <div class="total-preview" id="total-preview">
+                    <div class="t-row">
+                        <span>Quantity</span>
+                        <span id="prev-qty">—</span>
+                    </div>
+                    <div class="t-row">
+                        <span>Unit Cost</span>
+                        <span id="prev-cost">—</span>
+                    </div>
+                    <div class="t-row total">
+                        <span>💸 कुल खर्च</span>
+                        <span id="prev-total">—</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Supplier नाम *</label>
-                <input type="text" class="form-control" id="supplier_name"
-                    placeholder="Supplier को नाम हाल्नुस्">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Quantity *</label>
-                <input type="number" class="form-control" id="quantity"
-                    placeholder="कति थान किन्ने?" min="1">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Unit Cost (Rs.) *</label>
-                <input type="number" class="form-control" id="unit_cost"
-                    placeholder="प्रति थान मूल्य" step="0.01">
-            </div>
-
-            <!-- Total Preview -->
-            <div class="total-preview" id="total-preview">
-                <div class="t-row">
-                    <span>Quantity:</span>
-                    <span id="prev-qty">-</span>
-                </div>
-                <div class="t-row">
-                    <span>Unit Cost:</span>
-                    <span id="prev-cost">-</span>
-                </div>
-                <div class="t-row total">
-                    <span>💸 कुल खर्च:</span>
-                    <span id="prev-total">-</span>
-                </div>
-            </div>
-
-            <div class="modal-actions">
+            <div class="modal-footer">
                 <button class="btn-cancel" id="cancel-btn">रद्द गर्नुस्</button>
-                <button class="btn-save" id="save-btn">🛒 खरिद Record गर्नुस्</button>
+                <button class="btn-save" id="save-btn">✅ खरिद Record गर्नुस्</button>
             </div>
         </div>
     </div>
 
     <script src="js/api.js"></script>
     <script>
-        // Date
+        // ── Sidebar ──
+        const sidebar = document.getElementById('sidebar');
+        const main = document.getElementById('main');
+        const toggleBtn = document.getElementById('toggle-btn');
+        let isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+
+        function applySidebarState() {
+            sidebar.classList.toggle('collapsed', isCollapsed);
+            main.classList.toggle('expanded', isCollapsed);
+            toggleBtn.textContent = isCollapsed ? '▶' : '◀';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            isCollapsed = !isCollapsed;
+            localStorage.setItem('sidebar-collapsed', isCollapsed);
+            applySidebarState();
+        });
+
+        applySidebarState();
+
+        // ── Date ──
         document.getElementById('today-date').textContent =
             new Date().toLocaleDateString('ne-NP', {
                 year: 'numeric', month: 'long', day: 'numeric'
             });
 
-        // Products load
+        let products = [];
+
+        // ── Load Products ──
         async function loadProducts() {
             const res = await apiFetch('/api/products/');
             const data = await res.json();
-            const products = data.results || data;
+            products = data.results || data;
             const select = document.getElementById('product');
-
             products.forEach(p => {
                 select.innerHTML += `
-                    <option value="${p.id}" data-stock="${p.current_stock}">
+                    <option value="${p.id}"
+                        data-stock="${p.current_stock}">
                         ${p.name} (Stock: ${p.current_stock})
                     </option>`;
             });
         }
 
-        // Product select गर्दा current stock देखाउने
+        // ── Load Purchases ──
+        async function loadPurchases() {
+            const res = await apiFetch('/api/purchases/');
+            const data = await res.json();
+            const purchases = data.results || data;
+            renderPurchases(purchases);
+        }
+
+        // ── Render Purchases ──
+        function renderPurchases(purchases) {
+            const tbody = document.getElementById('purchases-table');
+            document.getElementById('result-count').textContent =
+                `${purchases.length} वटा`;
+            document.getElementById('total-purchases').textContent =
+                purchases.length;
+
+            // आजको summary calculate
+            const today = new Date().toDateString();
+            let todaySpent = 0;
+            let todayStock = 0;
+
+            purchases.forEach(p => {
+                if (new Date(p.created_at).toDateString() === today) {
+                    todaySpent += parseFloat(p.total_cost);
+                    todayStock += p.quantity;
+                }
+            });
+
+            document.getElementById('today-spent').textContent =
+                `Rs. ${todaySpent.toLocaleString()}`;
+            document.getElementById('today-stock').textContent =
+                `${todayStock} थान`;
+
+            if (purchases.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="6" class="empty-state">
+                        <div class="empty-icon">🛒</div>
+                        अझै कुनै खरिद छैन - थप्नुस्!
+                    </td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = purchases.map(p => `
+                <tr>
+                    <td><strong>${p.product_name}</strong></td>
+                    <td style="color:var(--text-secondary)">${p.supplier_name}</td>
+                    <td>
+                        <span class="badge badge-info">${p.quantity} थान</span>
+                    </td>
+                    <td style="font-family:'DM Mono',monospace">
+                        Rs. ${parseFloat(p.unit_cost).toLocaleString()}
+                    </td>
+                    <td>
+                        <span class="badge badge-orange">
+                            Rs. ${parseFloat(p.total_cost).toLocaleString()}
+                        </span>
+                    </td>
+                    <td style="color:var(--text-muted); font-size:0.82rem">
+                        ${new Date(p.created_at).toLocaleDateString('ne-NP')}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ── Product Select ──
         document.getElementById('product').addEventListener('change', function () {
-            const selected = this.options[this.selectedIndex];
+            const sel = this.options[this.selectedIndex];
             if (this.value) {
-                document.getElementById('info-stock').textContent = selected.dataset.stock;
+                document.getElementById('info-stock').textContent = sel.dataset.stock;
                 document.getElementById('product-info').classList.add('active');
             } else {
                 document.getElementById('product-info').classList.remove('active');
@@ -493,84 +663,24 @@
             updatePreview();
         });
 
-        // Total preview update
+        // ── Total Preview ──
         function updatePreview() {
             const qty = parseFloat(document.getElementById('quantity').value) || 0;
             const cost = parseFloat(document.getElementById('unit_cost').value) || 0;
 
             if (qty > 0 && cost > 0) {
-                const total = qty * cost;
                 document.getElementById('prev-qty').textContent = `${qty} थान`;
-                document.getElementById('prev-cost').textContent = `Rs. ${cost}`;
+                document.getElementById('prev-cost').textContent =
+                    `Rs. ${cost.toLocaleString()}`;
                 document.getElementById('prev-total').textContent =
-                    `Rs. ${total.toLocaleString()}`;
+                    `Rs. ${(qty * cost).toLocaleString()}`;
                 document.getElementById('total-preview').classList.add('active');
             } else {
                 document.getElementById('total-preview').classList.remove('active');
             }
         }
 
-        document.getElementById('quantity').addEventListener('input', updatePreview);
-        document.getElementById('unit_cost').addEventListener('input', updatePreview);
-
-        // Purchases load
-        async function loadPurchases() {
-            const res = await apiFetch('/api/purchases/');
-            const data = await res.json();
-            const purchases = data.results || data;
-            const tbody = document.getElementById('purchases-table');
-
-            // Summary calculate गर्ने
-            document.getElementById('total-purchases').textContent = purchases.length;
-
-            const today = new Date().toDateString();
-            let todaySpent = 0;
-            let todayStockAdded = 0;
-
-            purchases.forEach(p => {
-                if (new Date(p.created_at).toDateString() === today) {
-                    todaySpent += parseFloat(p.total_cost);
-                    todayStockAdded += p.quantity;
-                }
-            });
-
-            document.getElementById('today-spent').textContent =
-                `Rs. ${todaySpent.toLocaleString()}`;
-            document.getElementById('today-stock-added').textContent =
-                `${todayStockAdded} थान`;
-
-            if (purchases.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="empty-state">
-                            <div class="empty-icon">🛒</div>
-                            अझै कुनै खरिद छैन - थप्नुस्!
-                        </td>
-                    </tr>`;
-                return;
-            }
-
-            tbody.innerHTML = purchases.map(p => `
-                <tr>
-                    <td><strong>${p.product_name}</strong></td>
-                    <td>${p.supplier_name}</td>
-                    <td>
-                        <span class="badge badge-blue">${p.quantity} थान</span>
-                    </td>
-                    <td>Rs. ${parseFloat(p.unit_cost).toLocaleString()}</td>
-                    <td>
-                        <span class="badge badge-orange">
-                            Rs. ${parseFloat(p.total_cost).toLocaleString()}
-                        </span>
-                    </td>
-                    <td style="color:#94a3b8">
-                        ${new Date(p.created_at).toLocaleDateString('ne-NP')}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Purchase save
+        // ── Save Purchase ──
         async function savePurchase() {
             const errorEl = document.getElementById('modal-error');
             errorEl.style.display = 'none';
@@ -580,7 +690,6 @@
             const quantity = document.getElementById('quantity').value;
             const unit_cost = document.getElementById('unit_cost').value;
 
-            // Validation
             if (!product || !supplier_name || !quantity || !unit_cost) {
                 errorEl.textContent = 'सबै fields भर्नुस्!';
                 errorEl.style.display = 'block';
@@ -605,41 +714,41 @@
 
             if (res.ok) {
                 closeModal();
-                loadPurchases(); // Table refresh
+                loadPurchases();
             } else {
-                const errors = Object.values(data).flat().join(' ');
-                errorEl.textContent = errors;
+                errorEl.textContent = Object.values(data).flat().join(' ');
                 errorEl.style.display = 'block';
             }
 
             saveBtn.disabled = false;
-            saveBtn.textContent = '🛒 खरिद Record गर्नुस्';
+            saveBtn.textContent = '✅ खरिद Record गर्नुस्';
         }
 
-        // Modal
+        // ── Modal ──
         function openModal() {
             document.getElementById('modal').classList.add('active');
         }
 
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
-            document.getElementById('product').value = '';
-            document.getElementById('supplier_name').value = '';
-            document.getElementById('quantity').value = '';
-            document.getElementById('unit_cost').value = '';
+            ['product','supplier_name','quantity','unit_cost'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
             document.getElementById('product-info').classList.remove('active');
             document.getElementById('total-preview').classList.remove('active');
             document.getElementById('modal-error').style.display = 'none';
         }
 
-        // Events
+        // ── Events ──
         document.getElementById('add-purchase-btn').addEventListener('click', openModal);
         document.getElementById('cancel-btn').addEventListener('click', closeModal);
         document.getElementById('close-modal').addEventListener('click', closeModal);
         document.getElementById('save-btn').addEventListener('click', savePurchase);
         document.getElementById('logout-btn').addEventListener('click', logout);
+        document.getElementById('quantity').addEventListener('input', updatePreview);
+        document.getElementById('unit_cost').addEventListener('input', updatePreview);
 
-        // Init
+        // ── Init ──
         loadProducts();
         loadPurchases();
     </script>

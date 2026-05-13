@@ -1,396 +1,653 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --sidebar-bg: #0F172A;
+            --sidebar-hover: #1E293B;
+            --sidebar-active: #F59E0B;
+            --accent: #F59E0B;
+            --accent-light: #FEF3C7;
+            --accent-dark: #D97706;
+            --bg: #F5F4F0;
+            --surface: #FFFFFF;
+            --border: #E8E6E0;
+            --text-primary: #1A1A2E;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
+            --success: #059669;
+            --success-bg: #ECFDF5;
+            --danger: #DC2626;
+            --danger-bg: #FEF2F2;
+            --info: #2563EB;
+            --info-bg: #EFF6FF;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f8faff;
-            color: #1e293b;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
             display: flex;
+            min-height: 100vh;
         }
 
-        /* Sidebar */
+        /* ── Sidebar ── */
         .sidebar {
-            width: 220px;
-            background: white;
+            width: 240px;
+            background: var(--sidebar-bg);
             height: 100vh;
             position: fixed;
-            padding: 1.5rem 1rem;
-            border-right: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .sidebar.collapsed { width: 68px; }
+
+        .sidebar-top {
+            padding: 1.5rem 1.2rem 1rem;
+            border-bottom: 1px solid #1E293B;
         }
 
         .sidebar-logo {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #6366f1;
-            padding: 0.5rem;
-            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            white-space: nowrap;
         }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: -0.3px;
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            color: #475569;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+
+        .toggle-btn {
+            width: 28px;
+            height: 28px;
+            background: #1E293B;
+            color: #94A3B8;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover { background: #334155; color: #fff; }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 0.5rem 0.8rem;
+        }
+
+        .nav-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.5rem 0.4rem;
+            margin-top: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .nav-label { opacity: 0; }
 
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 0.7rem;
-            padding: 0.75rem 1rem;
-            color: #64748b;
+            gap: 0.8rem;
+            padding: 0.65rem 0.8rem;
+            color: #94A3B8;
             text-decoration: none;
-            border-radius: 10px;
-            margin-bottom: 0.3rem;
-            font-size: 0.95rem;
-            transition: all 0.2s;
+            border-radius: 8px;
+            margin-bottom: 0.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            white-space: nowrap;
         }
 
         .nav-item:hover {
-            background: #f0f4ff;
-            color: #6366f1;
+            background: var(--sidebar-hover);
+            color: #E2E8F0;
         }
 
         .nav-item.active {
-            background: #6366f1;
-            color: white;
+            background: #1C2A44;
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
+            padding-left: calc(0.8rem - 3px);
+        }
+
+        .nav-icon {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-text { transition: opacity 0.2s; }
+        .sidebar.collapsed .nav-text,
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .logo-sub { opacity: 0; width: 0; overflow: hidden; }
+        .sidebar.collapsed .nav-item { justify-content: center; padding: 0.65rem; }
+        .sidebar.collapsed .nav-item.active { border-left: none; padding: 0.65rem; }
+
+        .sidebar-bottom {
+            padding: 1rem 0.8rem;
+            border-top: 1px solid #1E293B;
         }
 
         .logout-btn {
-            margin-top: auto;
-            padding: 0.75rem;
-            background: #fef2f2;
-            color: #dc2626;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.65rem 0.8rem;
+            color: #64748B;
+            background: none;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
-            width: 100%;
-        }
-
-        .logout-btn:hover {
-            background: #fee2e2;
-        }
-
-        /* Main */
-        .main {
-            margin-left: 220px;
-            padding: 2rem;
-            width: 100%;
-        }
-
-        .page-header {
-            margin-bottom: 1.5rem;
-        }
-
-        .page-header h1 {
-            font-size: 1.5rem;
-            color: #1e293b;
-        }
-
-        .page-header p {
-            color: #94a3b8;
             font-size: 0.9rem;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.15s;
+            white-space: nowrap;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .logout-btn:hover { background: #1E293B; color: #F87171; }
+        .sidebar.collapsed .logout-btn { justify-content: center; }
+        .sidebar.collapsed .logout-text { opacity: 0; width: 0; overflow: hidden; }
+
+        /* ── Main ── */
+        .main {
+            margin-left: 240px;
+            padding: 2rem 2.5rem;
+            width: 100%;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .main.expanded { margin-left: 68px; }
+
+        /* ── Header ── */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
             margin-top: 0.2rem;
         }
 
-        /* Stat Cards */
+        .date-badge {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ── Stat Cards ── */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .stat-card .icon {
-            font-size: 2rem;
-            margin-bottom: 0.8rem;
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--card-accent, #E8E6E0);
+            border-radius: 12px 12px 0 0;
         }
 
-        .stat-card .label {
-            font-size: 0.85rem;
-            color: #94a3b8;
+        .stat-card.green::before { background: var(--success); }
+        .stat-card.amber::before { background: var(--accent); }
+        .stat-card.red::before { background: var(--danger); }
+        .stat-card.blue::before { background: var(--info); }
+
+        .stat-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.6rem;
+        }
+
+        .stat-value {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            line-height: 1;
             margin-bottom: 0.3rem;
         }
 
-        .stat-card .value {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #1e293b;
+        .stat-value.green { color: var(--success); }
+        .stat-value.red { color: var(--danger); }
+
+        .stat-icon {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            font-size: 1.8rem;
+            opacity: 0.08;
         }
 
-        .stat-card.warning .value {
-            color: #dc2626;
-        }
-
-        .stat-card.success .value {
-            color: #16a34a;
-        }
-
-        /* Tables */
-        .section {
-            background: white;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .section-header {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1e293b;
+        /* ── Charts Grid ── */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 1rem;
             margin-bottom: 1rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 1px solid #f1f5f9;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        /* ── Section Cards ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1rem;
         }
 
-        th {
-            text-align: left;
-            padding: 0.7rem 0.8rem;
-            color: #94a3b8;
-            font-size: 0.82rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.1rem 1.4rem;
+            border-bottom: 1px solid var(--border);
         }
 
-        td {
-            padding: 0.8rem;
+        .card-title {
             font-size: 0.92rem;
-            color: #334155;
-            border-top: 1px solid #f1f5f9;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
+        .card-body { padding: 1.2rem 1.4rem; }
+
+        /* ── Table ── */
+        .data-table { width: 100%; border-collapse: collapse; }
+
+        .data-table th {
+            text-align: left;
+            padding: 0.6rem 1rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            background: #FAFAF8;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 0.85rem 1rem;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid #F5F4F0;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: #FAFAF8; }
+
+        /* ── Badges ── */
         .badge {
-            padding: 0.25rem 0.7rem;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.6rem;
             border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'DM Mono', monospace;
         }
 
-        .badge-red {
-            background: #fef2f2;
-            color: #dc2626;
-        }
+        .badge-success { background: var(--success-bg); color: var(--success); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger); }
+        .badge-info { background: var(--info-bg); color: var(--info); }
+        .badge-amber { background: var(--accent-light); color: var(--accent-dark); }
 
-        .badge-green {
-            background: #f0fdf4;
-            color: #16a34a;
-        }
-
-        .badge-blue {
-            background: #eff6ff;
-            color: #2563eb;
+        .rank-badge {
+            width: 24px;
+            height: 24px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-family: 'DM Mono', monospace;
         }
 
         .empty-state {
             text-align: center;
-            padding: 2rem;
-            color: #94a3b8;
-            font-size: 0.95rem;
+            padding: 2.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ── Bottom Grid ── */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
+
     <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-logo">📦 Inventory</div>
-        <nav>
-            <a href="index.html" class="nav-item active">📊 Dashboard</a>
-            <a href="products.html" class="nav-item">🏷️ Products</a>
-            <a href="purchases.html" class="nav-item">🛒 Purchases</a>
-            <a href="sales.html" class="nav-item">💰 Sales</a>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <div class="sidebar-logo">
+                <div class="logo-icon">📦</div>
+                <div>
+                    <div class="logo-text">Inventory</div>
+                    <div class="logo-sub">Management</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="toggle-btn" id="toggle-btn">◀</button>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main Menu</div>
+            <a href="index.html" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="products.html" class="nav-item">
+                <span class="nav-icon">🏷️</span>
+                <span class="nav-text">Products</span>
+            </a>
+            <a href="purchases.html" class="nav-item">
+                <span class="nav-icon">🛒</span>
+                <span class="nav-text">Purchases</span>
+            </a>
+            <a href="sales.html" class="nav-item">
+                <span class="nav-icon">💰</span>
+                <span class="nav-text">Sales</span>
+            </a>
         </nav>
-        <button class="logout-btn" id="logout-btn">🚪 Logout</button>
+
+        <div class="sidebar-bottom">
+            <button class="logout-btn" id="logout-btn">
+                <span class="nav-icon">🚪</span>
+                <span class="logout-text">Logout</span>
+            </button>
+        </div>
     </div>
 
     <!-- Main -->
-    <div class="main">
+    <div class="main" id="main">
+
+        <!-- Header -->
         <div class="page-header">
-            <h1>📊 Dashboard</h1>
-            <p id="today-date"></p>
+            <div>
+                <div class="page-title">Dashboard</div>
+                <div class="page-subtitle">आजको व्यापार अवलोकन</div>
+            </div>
+            <div class="date-badge" id="today-date"></div>
         </div>
 
         <!-- Stats -->
         <div class="stats-grid">
-            <div class="stat-card success">
-                <div class="icon">💰</div>
-                <div class="label">आजको बिक्री</div>
-                <div class="value" id="revenue">-</div>
+            <div class="stat-card green">
+                <div class="stat-label">आजको बिक्री</div>
+                <div class="stat-value green" id="revenue">—</div>
+                <div class="stat-icon">💰</div>
             </div>
-            <div class="stat-card success">
-                <div class="icon">📈</div>
-                <div class="label">आजको नाफा</div>
-                <div class="value" id="profit">-</div>
+            <div class="stat-card green">
+                <div class="stat-label">आजको नाफा</div>
+                <div class="stat-value green" id="profit">—</div>
+                <div class="stat-icon">📈</div>
             </div>
-            <div class="stat-card">
-                <div class="icon">🧾</div>
-                <div class="label">आजको बिक्री संख्या</div>
-                <div class="value" id="sales-count">-</div>
+            <div class="stat-card blue">
+                <div class="stat-label">बिक्री संख्या</div>
+                <div class="stat-value" id="sales-count">—</div>
+                <div class="stat-icon">🧾</div>
             </div>
-            <div class="stat-card">
-                <div class="icon">📦</div>
-                <div class="label">कुल Products</div>
-                <div class="value" id="total-products">-</div>
+            <div class="stat-card amber">
+                <div class="stat-label">कुल Products</div>
+                <div class="stat-value" id="total-products">—</div>
+                <div class="stat-icon">📦</div>
             </div>
-            <div class="stat-card warning">
-                <div class="icon">⚠️</div>
-                <div class="label">Low Stock Items</div>
-                <div class="value" id="low-stock-count">-</div>
+            <div class="stat-card red">
+                <div class="stat-label">Low Stock</div>
+                <div class="stat-value red" id="low-stock-count">—</div>
+                <div class="stat-icon">⚠️</div>
             </div>
         </div>
 
-        <!-- Charts Section -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem">
-
-            <!-- Sales Trend -->
-            <div class="section">
-                <div class="section-header">📈 Last 7 Days - बिक्री Trend</div>
-                <canvas id="salesChart" height="120"></canvas>
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📈 बिक्री Trend — अन्तिम ७ दिन</div>
+                </div>
+                <div class="card-body">
+                    <canvas id="salesChart" height="100"></canvas>
+                </div>
             </div>
-
-            <!-- Top Products -->
-            <div class="section">
-                <div class="section-header">🏆 Top Selling Products</div>
-                <canvas id="topProductsChart" height="120"></canvas>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🏆 Top Products</div>
+                </div>
+                <div class="card-body">
+                    <canvas id="topProductsChart" height="100"></canvas>
+                </div>
             </div>
-
         </div>
 
-        <!-- Low Stock -->
-        <div class="section">
-            <div class="section-header">⚠️ Low Stock Alert</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>हालको Stock</th>
-                        <th>Minimum</th>
-                        <th>अवस्था</th>
-                    </tr>
-                </thead>
-                <tbody id="low-stock-table">
-                    <tr>
-                        <td colspan="4" class="empty-state">Loading...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- Bottom -->
+        <div class="bottom-grid">
+            <!-- Low Stock -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⚠️ Low Stock Alert</div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Stock</th>
+                            <th>Min</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="low-stock-table">
+                        <tr><td colspan="4" class="empty-state">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Top Products -->
-        <div class="section">
-            <div class="section-header">🔥 धेरै बिकेका Products</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Product</th>
-                        <th>कुल बिक्री</th>
-                    </tr>
-                </thead>
-                <tbody id="top-products-table">
-                    <tr>
-                        <td colspan="3" class="empty-state">Loading...</td>
-                    </tr>
-                </tbody>
-            </table>
+            <!-- Top Products Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔥 धेरै बिकेका</div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>बिक्री</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top-products-table">
+                        <tr><td colspan="3" class="empty-state">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script src="js/api.js"></script>
     <script>
-        // Date देखाउने
+        // ── Sidebar Toggle ──
+        const sidebar = document.getElementById('sidebar');
+        const main = document.getElementById('main');
+        const toggleBtn = document.getElementById('toggle-btn');
+        let isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+
+        function applySidebarState() {
+            sidebar.classList.toggle('collapsed', isCollapsed);
+            main.classList.toggle('expanded', isCollapsed);
+            toggleBtn.textContent = isCollapsed ? '▶' : '◀';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            isCollapsed = !isCollapsed;
+            localStorage.setItem('sidebar-collapsed', isCollapsed);
+            applySidebarState();
+        });
+
+        applySidebarState();
+
+        // ── Date ──
         document.getElementById('today-date').textContent =
             new Date().toLocaleDateString('ne-NP', {
                 year: 'numeric', month: 'long', day: 'numeric'
             });
 
+        // ── Dashboard Data ──
         async function loadDashboard() {
             const res = await apiFetch('/api/dashboard/');
             const data = await res.json();
 
-            document.getElementById('revenue').textContent = `Rs. ${parseFloat(data.today.revenue).toLocaleString()}`;
-            document.getElementById('profit').textContent = `Rs. ${parseFloat(data.today.profit).toLocaleString()}`;
-            document.getElementById('sales-count').textContent = data.today.sales_count;
-            document.getElementById('total-products').textContent = data.inventory.total_products;
-            document.getElementById('low-stock-count').textContent = data.inventory.low_stock_count;
+            document.getElementById('revenue').textContent =
+                `Rs. ${parseFloat(data.today.revenue).toLocaleString()}`;
+            document.getElementById('profit').textContent =
+                `Rs. ${parseFloat(data.today.profit).toLocaleString()}`;
+            document.getElementById('sales-count').textContent =
+                data.today.sales_count;
+            document.getElementById('total-products').textContent =
+                data.inventory.total_products;
+            document.getElementById('low-stock-count').textContent =
+                data.inventory.low_stock_count;
 
-            // Low stock table
+            // Low Stock Table
             const lowBody = document.getElementById('low-stock-table');
             lowBody.innerHTML = data.inventory.low_stock_items.length === 0
                 ? `<tr><td colspan="4" class="empty-state">✅ सबै stock ठीक छ!</td></tr>`
                 : data.inventory.low_stock_items.map(item => `
                     <tr>
-                        <td>${item.name}</td>
-                        <td><strong>${item.current_stock}</strong></td>
+                        <td><strong>${item.name}</strong></td>
+                        <td><span class="badge badge-danger">${item.current_stock}</span></td>
                         <td>${item.low_stock_threshold}</td>
-                        <td><span class="badge badge-red">⚠️ कम छ</span></td>
+                        <td><span class="badge badge-danger">कम छ</span></td>
                     </tr>
                 `).join('');
 
-            // Top products
+            // Top Products Table
             const topBody = document.getElementById('top-products-table');
             topBody.innerHTML = data.top_products.length === 0
-                ? `<tr><td colspan="3" class="empty-state">अझै बिक्री भएको छैन</td></tr>`
+                ? `<tr><td colspan="3" class="empty-state">अझै बिक्री छैन</td></tr>`
                 : data.top_products.map((p, i) => `
                     <tr>
-                        <td><span class="badge badge-blue">${i + 1}</span></td>
+                        <td><span class="rank-badge">${i + 1}</span></td>
                         <td>${p.product__name}</td>
-                        <td><span class="badge badge-green">${p.total_sold} units</span></td>
+                        <td><span class="badge badge-success">${p.total_sold} units</span></td>
                     </tr>
                 `).join('');
         }
 
-        document.getElementById('logout-btn').addEventListener('click', logout);
-
+        // ── Charts ──
         async function loadCharts() {
             const res = await apiFetch('/api/dashboard/');
             const data = await res.json();
 
-            // ── Line Chart - Real Data ──
-            const salesCtx = document.getElementById('salesChart').getContext('2d');
-            new Chart(salesCtx, {
+            Chart.defaults.font.family = "'Outfit', sans-serif";
+
+            // Line Chart
+            new Chart(
+                document.getElementById('salesChart').getContext('2d'), {
                 type: 'line',
                 data: {
-                    labels: data.last_7_days.map(d => {
-                        const date = new Date(d.date);
-                        return date.toLocaleDateString('ne-NP', {
+                    labels: data.last_7_days.map(d =>
+                        new Date(d.date).toLocaleDateString('ne-NP', {
                             month: 'short', day: 'numeric'
-                        });
-                    }),
+                        })
+                    ),
                     datasets: [{
-                        label: 'बिक्री (Rs.)',
-                        data: data.last_7_days.map(d => d.revenue), // ← real data
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99,102,241,0.08)',
-                        borderWidth: 2.5,
-                        pointBackgroundColor: '#6366f1',
+                        data: data.last_7_days.map(d => d.revenue),
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245,158,11,0.06)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#F59E0B',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
                         pointRadius: 4,
                         fill: true,
                         tension: 0.4
@@ -402,41 +659,40 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: { color: '#f1f5f9' },
+                            grid: { color: '#F5F4F0' },
+                            border: { display: false },
                             ticks: {
-                                callback: val => `Rs.${val.toLocaleString()}`
+                                color: '#94A3B8',
+                                font: { size: 11 },
+                                callback: v => `Rs.${v.toLocaleString()}`
                             }
                         },
-                        x: { grid: { display: false } }
+                        x: {
+                            grid: { display: false },
+                            border: { display: false },
+                            ticks: { color: '#94A3B8', font: { size: 11 } }
+                        }
                     }
                 }
             });
 
-            // ── Bar Chart - Top Products ──
-            const topCtx = document.getElementById('topProductsChart').getContext('2d');
+            // Bar Chart
             const topProducts = data.top_products;
+            if (topProducts.length === 0) return;
 
-            if (topProducts.length === 0) {
-                topCtx.canvas.parentElement.innerHTML +=
-                    '<p style="text-align:center;color:#94a3b8;padding:2rem">अझै बिक्री छैन</p>';
-                return;
-            }
-
-            new Chart(topCtx, {
+            new Chart(
+                document.getElementById('topProductsChart').getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: topProducts.map(p => p.product__name),
                     datasets: [{
-                        label: 'बिक्री (units)',
                         data: topProducts.map(p => p.total_sold),
                         backgroundColor: [
-                            'rgba(99,102,241,0.8)',
-                            'rgba(22,163,74,0.8)',
-                            'rgba(234,88,12,0.8)',
-                            'rgba(124,58,237,0.8)',
-                            'rgba(37,99,235,0.8)',
+                            '#F59E0B', '#FCD34D', '#FDE68A',
+                            '#FEF3C7', '#FFFBEB'
                         ],
                         borderRadius: 6,
+                        borderSkipped: false,
                     }]
                 },
                 options: {
@@ -445,17 +701,24 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: { color: '#f1f5f9' },
-                            ticks: { stepSize: 1 }
+                            grid: { color: '#F5F4F0' },
+                            border: { display: false },
+                            ticks: { color: '#94A3B8', font: { size: 11 } }
                         },
-                        x: { grid: { display: false } }
+                        x: {
+                            grid: { display: false },
+                            border: { display: false },
+                            ticks: { color: '#94A3B8', font: { size: 11 } }
+                        }
                     }
                 }
             });
         }
+
+        document.getElementById('logout-btn').addEventListener('click', logout);
+
         loadDashboard();
         loadCharts();
     </script>
 </body>
-
 </html>

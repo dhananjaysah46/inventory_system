@@ -3,142 +3,408 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory System - Login</title>
+    <title>Login - Inventory System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --accent: #F59E0B;
+            --accent-light: #FEF3C7;
+            --accent-dark: #D97706;
+            --bg: #F5F4F0;
+            --surface: #FFFFFF;
+            --border: #E8E6E0;
+            --text-primary: #1A1A2E;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
+            --danger: #DC2626;
+            --danger-bg: #FEF2F2;
+            --sidebar-bg: #0F172A;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f0f4ff;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* ── Left Panel ── */
+        .left-panel {
+            background: var(--sidebar-bg);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Pattern */
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: rgba(245,158,11,0.05);
+            top: -100px;
+            right: -100px;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(245,158,11,0.04);
+            bottom: -50px;
+            left: -50px;
+        }
+
+        .brand {
+            display: flex;
             align-items: center;
-            height: 100vh;
+            gap: 0.75rem;
+            z-index: 1;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .brand-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-tagline {
+            font-size: 0.7rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .left-content {
+            z-index: 1;
+        }
+
+        .left-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+
+        .left-title span {
+            color: var(--accent);
+        }
+
+        .left-desc {
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.7;
+            max-width: 340px;
+        }
+
+        /* Feature List */
+        .features {
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.88rem;
+            color: #64748B;
+        }
+
+        .feature-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* ── Right Panel ── */
+        .right-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            background: var(--bg);
         }
 
         .login-box {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            width: 380px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 400px;
         }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 2rem;
+        .login-header {
+            margin-bottom: 2.5rem;
         }
 
-        .logo-icon {
-            font-size: 3rem;
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            margin-bottom: 0.4rem;
         }
 
-        .logo h1 {
-            font-size: 1.4rem;
-            color: #1e293b;
-            margin-top: 0.5rem;
-        }
-
-        .logo p {
-            color: #94a3b8;
+        .login-subtitle {
             font-size: 0.9rem;
-            margin-top: 0.2rem;
+            color: var(--text-muted);
         }
 
+        /* ── Form ── */
         .form-group {
             margin-bottom: 1.2rem;
         }
 
-        label {
+        .form-label {
             display: block;
-            font-size: 0.9rem;
-            color: #475569;
-            margin-bottom: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            background: var(--surface);
+            outline: none;
+            transition: border 0.15s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
+        }
+
+        .form-control::placeholder { color: var(--text-muted); }
+
+        /* ── Login Button ── */
+        .login-btn {
+            width: 100%;
+            padding: 0.95rem;
+            background: var(--accent);
+            color: var(--sidebar-bg);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.15s;
+            margin-top: 0.5rem;
+            letter-spacing: 0.01em;
+        }
+
+        .login-btn:hover {
+            background: var(--accent-dark);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .login-btn:active { transform: translateY(0); }
+
+        .login-btn:disabled {
+            background: #FDE68A;
+            cursor: not-allowed;
+            transform: none;
+            color: #92400E;
+        }
+
+        /* ── Error ── */
+        .error-box {
+            display: none;
+            background: var(--danger-bg);
+            border: 1px solid #FECACA;
+            color: var(--danger);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            margin-bottom: 1.2rem;
             font-weight: 500;
         }
 
-        input {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
-            color: #1e293b;
-            outline: none;
-            transition: border 0.2s;
+        /* ── Footer ── */
+        .login-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
 
-        input:focus { border-color: #6366f1; }
-
-        .login-btn {
-            width: 100%;
-            padding: 0.9rem;
-            background: #6366f1;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 0.5rem;
-            transition: background 0.2s;
+        /* ── Divider ── */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.8rem 0;
         }
 
-        .login-btn:hover { background: #4f46e5; }
-        .login-btn:disabled { background: #a5b4fc; cursor: not-allowed; }
-
-        .error {
-            background: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-            padding: 0.7rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin-top: 0.8rem;
-            display: none;
+        /* ── Version ── */
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
         }
     </style>
 </head>
 <body>
-    <div class="login-box">
-        <div class="logo">
-            <div class="logo-icon">📦</div>
-            <h1>Inventory System</h1>
-            <p>आफ्नो account मा login गर्नुस्</p>
+
+    <!-- Left Panel -->
+    <div class="left-panel">
+        <!-- Brand -->
+        <div class="brand">
+            <div class="brand-icon">📦</div>
+            <div>
+                <div class="brand-name">Inventory System</div>
+                <div class="brand-tagline">Management Platform</div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="username" placeholder="Username हाल्नुस्">
+        <!-- Center Content -->
+        <div class="left-content">
+            <div class="left-title">
+                आफ्नो व्यापार<br>
+                <span>स्मार्ट</span> तरिकाले<br>
+                manage गर्नुस्
+            </div>
+            <div class="left-desc">
+                Stock track गर्नुस्, Sales र Purchases record गर्नुस्,
+                र real-time analytics हेर्नुस् — सबै एकै ठाउँमा।
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="password" placeholder="Password हाल्नुस्">
+        <!-- Features -->
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-dot"></div>
+                Auto stock update — signal-based
+            </div>
+            <div class="feature-item">
+                <div class="feature-dot"></div>
+                Real-time profit & loss analytics
+            </div>
+            <div class="feature-item">
+                <div class="feature-dot"></div>
+                Low stock alerts & dashboard
+            </div>
+            <div class="feature-item">
+                <div class="feature-dot"></div>
+                Role-based access control
+            </div>
         </div>
+    </div>
 
-        <button class="login-btn" id="login-btn">🔐 Login गर्नुस्</button>
-        <div class="error" id="error-msg">Username वा Password मिलेन!</div>
+    <!-- Right Panel -->
+    <div class="right-panel">
+        <div class="login-box">
+
+            <div class="login-header">
+                <div class="login-title">Welcome back 👋</div>
+                <div class="login-subtitle">
+                    आफ्नो account मा login गर्नुस्
+                </div>
+            </div>
+
+            <div class="error-box" id="error-box"></div>
+
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    placeholder="तपाईंको username"
+                    autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    placeholder="••••••••"
+                    autocomplete="current-password">
+            </div>
+
+            <button class="login-btn" id="login-btn">
+                Login गर्नुस् →
+            </button>
+
+            <div class="divider"></div>
+
+            <div class="login-footer">
+                <div class="version-badge">
+                    v1.0 · Django + DRF · PostgreSQL
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         const API = 'http://127.0.0.1:8000';
         const loginBtn = document.getElementById('login-btn');
+        const errorBox = document.getElementById('error-box');
+
+        // Already logged in भए redirect
+        if (localStorage.getItem('access')) {
+            window.location.href = 'index.html';
+        }
 
         async function login() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
-            const errorEl = document.getElementById('error-msg');
+
+            errorBox.style.display = 'none';
 
             if (!username || !password) {
-                errorEl.textContent = 'Username र Password भर्नुस्!';
-                errorEl.style.display = 'block';
+                errorBox.textContent = 'Username र Password भर्नुस्!';
+                errorBox.style.display = 'block';
                 return;
             }
 
             loginBtn.disabled = true;
             loginBtn.textContent = 'Logging in...';
-            errorEl.style.display = 'none';
 
             try {
                 const res = await fetch(`${API}/api/token/`, {
@@ -154,16 +420,16 @@
                     localStorage.setItem('refresh', data.refresh);
                     window.location.href = 'index.html';
                 } else {
-                    errorEl.textContent = 'Username वा Password मिलेन!';
-                    errorEl.style.display = 'block';
+                    errorBox.textContent = 'Username वा Password मिलेन!';
+                    errorBox.style.display = 'block';
                     loginBtn.disabled = false;
-                    loginBtn.textContent = '🔐 Login गर्नुस्';
+                    loginBtn.textContent = 'Login गर्नुस् →';
                 }
             } catch {
-                errorEl.textContent = 'Server सँग connect हुन सकेन!';
-                errorEl.style.display = 'block';
+                errorBox.textContent = 'Server सँग connect हुन सकेन!';
+                errorBox.style.display = 'block';
                 loginBtn.disabled = false;
-                loginBtn.textContent = '🔐 Login गर्नुस्';
+                loginBtn.textContent = 'Login गर्नुस् →';
             }
         }
 
